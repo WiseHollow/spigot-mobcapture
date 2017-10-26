@@ -1,0 +1,13 @@
+# What projectile catches the creature.
+Projectile Catcher: EGG
+# Cost Mode: [ ITEM, VAULT ]
+Cost Mode: ITEM
+# When in ITEM mode, a player must have this item to catch a creature.
+Cost Item: REDSTONE
+Cost Amount: 1
+# When in VAULT mode, a player must have at least this amount of money.
+Cost Vault: 100
+# In these worlds, you cannot capture or release creatures.
+Disabled Worlds: []
+# Should eggs take the color of the creature they belong to?
+Colored Eggs: true

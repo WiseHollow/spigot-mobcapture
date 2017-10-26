@@ -1,0 +1,30 @@
+name: MobCapture
+version: 1.0.4
+author: WiseHollow
+main: net.johnbrooks.mh.Main
+
+soft-depend: [Vault]
+
+permissions:
+  MobCapture.Admin:
+    description: Performs administrative tasks regarding MobCapture.
+    default: op
+  MobCapture.Catch.*:
+    description: Ability to capture all types of animals and monsters.
+    default: op
+  MobCapture.Catch.Peaceful:
+    description: Ability to capture animals.
+    default: op
+  MobCapture.Catch.Hostile:
+    description: Ability to capture monsters.
+    default: op
+  MobCapture.NoCost:
+    description: Capture creatures without a cost.
+    default: op
+
+commands:
+  MobCapture:
+    description: Performs administrative tasks regarding MobCapture.
+    usage: /<command> reload|update|version
+    permission: MobCapture.admin
+    permission-message: You don't have <permission>
