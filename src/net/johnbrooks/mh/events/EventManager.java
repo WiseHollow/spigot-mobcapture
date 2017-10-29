@@ -2,6 +2,9 @@ package net.johnbrooks.mh.events;
 
 import net.johnbrooks.mh.*;
 import net.johnbrooks.mh.items.CaptureEgg;
+
+import java.util.Random;
+
 import org.bukkit.*;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.*;
@@ -9,8 +12,11 @@ import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
+import org.bukkit.event.player.PlayerEggThrowEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
@@ -75,6 +81,46 @@ public class EventManager implements Listener
             }
 
         }
+    }
+    
+    @EventHandler
+    public void onChickenSpawn(ProjectileHitEvent event) {
+    	//1) Check whether the projectile is an egg
+    	if (event.getEntity() instanceof Egg) {
+    		//2) If it meets the criteria to capture
+    		if (event.getEntity().hasMetadata("type") &&
+    			event.getEntity().getMetadata("type").get(0).asString().equalsIgnoreCase(Settings.projectileCatcherMaterial.name()) &&
+    			event.getHitEntity() != null) {
+    			//3) Do nothing
+    			return;
+    		} else {
+    			//4) Manually spawn the chick
+    			Random random = new Random(System.currentTimeMillis());
+    			if (random.nextInt(8) == 0) {
+    				//5) Spawn a chicken
+    				Chicken chicken = (Chicken) event.getEntity().getWorld().spawnEntity(event.getEntity().getLocation(), EntityType.CHICKEN);
+    				chicken.setBaby();
+    				if (random.nextInt(32) == 0) {
+    					//6) Make it 4
+    					Chicken chicken2 = (Chicken) event.getEntity().getWorld().spawnEntity(event.getEntity().getLocation(), EntityType.CHICKEN);
+        				chicken2.setBaby();
+        				Chicken chicken3 = (Chicken) event.getEntity().getWorld().spawnEntity(event.getEntity().getLocation(), EntityType.CHICKEN);
+        				chicken3.setBaby();
+        				Chicken chicken4 = (Chicken) event.getEntity().getWorld().spawnEntity(event.getEntity().getLocation(), EntityType.CHICKEN);
+        				chicken4.setBaby();
+    				}
+    			}
+    		}
+    	}
+    }
+    
+    @EventHandler
+    public void onChickenSpawn(CreatureSpawnEvent event) {
+    	//1) Check whether we are spawning a chicken from an egg
+    	if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.EGG && event.getEntityType() == EntityType.CHICKEN) {
+    		//2) Automatically cancel the event so we can manually trigger it above
+    		event.setCancelled(true);
+    	}
     }
 
     @EventHandler
