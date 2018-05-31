@@ -10,49 +10,38 @@ import org.bukkit.entity.Player;
 
 import java.io.File;
 
-public class Commands implements CommandExecutor
-{
+public class Commands implements CommandExecutor {
+
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
-    {
-        if (!sender.hasPermission("MobCapture.Admin"))
-        {
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+
+        if (!sender.hasPermission("MobCapture.Admin")) {
             sender.sendMessage(Language.PREFIX + "You do not have permission to run this command.");
             return true;
         }
 
-        if (args.length == 0)
-        {
-            if (sender instanceof Player)
-            {
+        if (args.length == 0) {
+            if (sender instanceof Player) {
                 sender.sendMessage(Language.PREFIX + "This plugin was created by WiseHollow!");
                 Player player = (Player) sender;
                 TextComponent message = new TextComponent(Language.PREFIX + ChatColor.UNDERLINE + "Click here " +
                         ChatColor.RESET + "" + ChatColor.BLUE + "to see my profile and my other plugins! " + Main.plugin.getName() + "!");
                 message.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://www.spigotmc.org/members/wisehollow.14804/"));
                 player.spigot().sendMessage(message);
-            }
-            else
+            } else
                 sender.sendMessage(ChatColor.BLUE + Main.plugin.getName() + " was created by WiseHollow. Check out my other plugins on my SpigotMC profile!");
             return true;
-        }
-        else if (args.length == 1)
-        {
-            if (args[0].equalsIgnoreCase("version"))
-            {
+        } else if (args.length == 1) {
+            if (args[0].equalsIgnoreCase("version")) {
                 sender.sendMessage(ChatColor.BLUE + Main.plugin.getName() + "'s current version: " + Main.plugin.getDescription().getVersion());
                 if (UpdateManager.isUpdateAvailable())
                     sender.sendMessage(Language.PREFIX + "Update is available.");
                 else
                     sender.sendMessage(Language.PREFIX + "Everything is up-to-date.");
                 return true;
-            }
-            else if (args[0].equalsIgnoreCase("update"))
-            {
-                if (UpdateManager.isUpdateAvailable())
-                {
-                    if (sender instanceof Player)
-                    {
+            } else if (args[0].equalsIgnoreCase("update")) {
+                if (UpdateManager.isUpdateAvailable()) {
+                    if (sender instanceof Player) {
                         Player player = (Player) sender;
                         TextComponent message = new TextComponent(Language.PREFIX + ChatColor.UNDERLINE + "Click here " +
                                 ChatColor.RESET + "" + ChatColor.BLUE + "to get the latest version of " + Main.plugin.getName() + "!");
@@ -65,16 +54,12 @@ public class Commands implements CommandExecutor
                 else
                     sender.sendMessage(Language.PREFIX + "Everything is up-to-date.");
                 return true;
-            }
-            else if (args[0].equalsIgnoreCase("reload"))
-            {
+            } else if (args[0].equalsIgnoreCase("reload")) {
                 Main.plugin.reloadConfig();
                 Settings.load();
                 sender.sendMessage(Language.PREFIX + "Configuration has been reloaded!");
                 return true;
-            }
-            else if (args[0].equalsIgnoreCase("regenConfig"))
-            {
+            } else if (args[0].equalsIgnoreCase("regenConfig")) {
                 File file = new File("plugins" + File.separator + Main.plugin.getName() + File.separator + "config.yml");
                 file.delete();
                 Main.plugin.saveDefaultConfig();

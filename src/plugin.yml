@@ -1,9 +1,9 @@
 name: MobCapture
-version: 1.0.5
+version: 1.0.6
 author: WiseHollow
 main: net.johnbrooks.mh.Main
 
-soft-depend: [Vault]
+soft-depend: [ Vault ]
 
 permissions:
   MobCapture.Admin:

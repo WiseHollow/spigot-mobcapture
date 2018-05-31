@@ -16,58 +16,46 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
-import org.bukkit.event.player.PlayerEggThrowEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.Vector;
 
-public class EventManager implements Listener
-{
-    public void initialize()
-    {
+public class EventManager implements Listener {
+    public void initialize() {
         register(this);
     }
 
-    private void register(Listener listener)
-    {
+    private void register(Listener listener) {
         Main.plugin.getServer().getPluginManager().registerEvents(listener, Main.plugin);
     }
 
-    private void callEvent(Event event)
-    {
+    private void callEvent(Event event) {
         Main.plugin.getServer().getPluginManager().callEvent(event);
     }
 
     @EventHandler
-    public void assignMetaDataOnLaunch(ProjectileLaunchEvent event)
-    {
+    public void assignMetaDataOnLaunch(ProjectileLaunchEvent event) {
+
         //
         // Give the projectile meta data concerning the material type that is being launched!
         //
 
         //1) If a player is shooting a projectile.
-        if (!event.isCancelled() && event.getEntity().getShooter() != null &&
-                event.getEntity().getShooter() instanceof Player)
-        {
+        if (!event.isCancelled() && event.getEntity().getShooter() != null && event.getEntity().getShooter() instanceof Player) {
             Player player = (Player) event.getEntity().getShooter();
 
             //2) Check which projectile is being launched.
             ItemStack projectileItemStack = null;
-            if (player.getInventory().getItemInMainHand().getType() == Material.BOW)
-            {
-                for (ItemStack itemStack : player.getInventory().getContents())
-                {
-                    if (itemStack != null && itemStack.getType() == Material.ARROW)
-                    {
+            if (player.getInventory().getItemInMainHand().getType() == Material.BOW) {
+                for (ItemStack itemStack : player.getInventory().getContents()) {
+                    if (itemStack != null && itemStack.getType() == Material.ARROW) {
                         projectileItemStack = itemStack;
                         break;
                     }
                 }
-            }
-            else
-            {
+            } else {
                 projectileItemStack = player.getInventory().getItemInMainHand();
             }
 
@@ -115,7 +103,7 @@ public class EventManager implements Listener
     }
     
     @EventHandler
-    public void onChickenSpawn(CreatureSpawnEvent event) {
+    public void onVanillaChickenSpawn(CreatureSpawnEvent event) {
     	//1) Check whether we are spawning a chicken from an egg
     	if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.EGG && event.getEntityType() == EntityType.CHICKEN) {
     		//2) Automatically cancel the event so we can manually trigger it above
@@ -131,22 +119,20 @@ public class EventManager implements Listener
                 event.getDamager().getMetadata("type").get(0).asString().equalsIgnoreCase(Settings.projectileCatcherMaterial.name()) &&
                 event.getEntity() instanceof LivingEntity &&
                 !(event.getEntity() instanceof Player) &&
-                ((Projectile) event.getDamager()).getShooter() instanceof Player)
-        {
+                ((Projectile) event.getDamager()).getShooter() instanceof Player) {
+
             //2) Check for whether the player has the correct payment to catch.
             Player player = (Player) ((Projectile) event.getDamager()).getShooter();
             LivingEntity livingEntity = (LivingEntity) event.getEntity();
 
             //3) Check if the player has permission to capture creatures.
-            if (!Main.permissionManager.hasPermissionToCapture(player, livingEntity))
-            {
+            if (!Main.permissionManager.hasPermissionToCapture(player, livingEntity)) {
                 player.sendMessage(Language.PREFIX + "You do not have permission to capture this creature.");
                 return;
             }
 
             //4) Check if they have enough money/items.
-            if (!player.hasPermission(Main.permissionManager.NoCost))
-            {
+            if (!player.hasPermission(Main.permissionManager.NoCost)) {
                 if (!EconomyManager.chargePlayer(player))
                 {
                     player.sendMessage(Language.PREFIX + "You do not have enough " +
@@ -158,24 +144,23 @@ public class EventManager implements Listener
             }
 
             //5) Check if this is a disabled world.
-            if (Settings.isDisabledWorld(player.getWorld().getName()))
-            {
+            if (Settings.isDisabledWorld(player.getWorld().getName())) {
                 player.sendMessage(Language.PREFIX + "You cannot capture a creature in this world!");
-                return;
+            } else {
+                //6) Setup capture event and run it.
+                CreatureCaptureEvent creatureCaptureEvent = new CreatureCaptureEvent(player, livingEntity);
+                callEvent(creatureCaptureEvent);
+                if (!creatureCaptureEvent.isCancelled()) {
+                    //7) Remove the damage from the entity so we don't kill it.
+                    event.setDamage(0.0d);
+
+                    //8) Capture Logic
+                    CaptureEgg.captureLivingEntity(creatureCaptureEvent.getTargetEntity());
+                    livingEntity.remove();
+                }
             }
 
-            //6) Setup capture event and run it.
-            CreatureCaptureEvent creatureCaptureEvent = new CreatureCaptureEvent(player, livingEntity);
-            callEvent(creatureCaptureEvent);
-            if (!creatureCaptureEvent.isCancelled())
-            {
-                //7) Remove the damage from the entity so we don't kill it.
-                event.setDamage(0.0d);
 
-                //8) Capture Logic
-                CaptureEgg.captureLivingEntity(creatureCaptureEvent.getTargetEntity());
-                livingEntity.remove();
-            }
         }
     }
 
@@ -183,23 +168,19 @@ public class EventManager implements Listener
     public void useSpawnEgg(PlayerInteractEvent event)
     {
         if (event.getPlayer().getInventory().getItemInMainHand() != null &&
-                event.getHand() == EquipmentSlot.HAND)
-        {
+                event.getHand() == EquipmentSlot.HAND) {
+
             String nameOfCreature = CaptureEgg.getCreatureType(event.getPlayer().getInventory().getItemInMainHand());
-            if (nameOfCreature != null)
-            {
-                if (Settings.isDisabledWorld(event.getPlayer().getWorld().getName()))
-                {
+            if (nameOfCreature != null) {
+                if (Settings.isDisabledWorld(event.getPlayer().getWorld().getName())) {
                     event.getPlayer().sendMessage(Language.PREFIX + "You cannot release a creature in this world!");
                     return;
                 }
 
-                if (!event.isCancelled() && event.getAction() == Action.RIGHT_CLICK_BLOCK)
-                {
+                if (!event.isCancelled() && event.getAction() == Action.RIGHT_CLICK_BLOCK) {
                     Location target = event.getClickedBlock().getLocation().clone();
 
-                    if (event.getBlockFace() != BlockFace.UP)
-                    {
+                    if (event.getBlockFace() != BlockFace.UP) {
                         // Make a friendly location to spawn the entity.
                         Vector direction = event.getPlayer().getLocation().toVector().subtract(target.toVector());
                         direction = direction.normalize();
@@ -208,8 +189,7 @@ public class EventManager implements Listener
 
                     CreatureReleaseEvent creatureReleaseEvent = new CreatureReleaseEvent(event.getPlayer(), target);
                     callEvent(creatureReleaseEvent);
-                    if (!creatureReleaseEvent.isCancelled())
-                    {
+                    if (!creatureReleaseEvent.isCancelled()) {
                         // Release Logic
 
                         // 1) Spawn creature at target location and cancel event.
@@ -218,20 +198,18 @@ public class EventManager implements Listener
                         CaptureEgg.useSpawnItem(event.getPlayer().getInventory().getItemInMainHand(), target);
 
                         // 2) Remove itemstack from user, or reduce amount by 1.
-                        if (event.getPlayer().getGameMode() != GameMode.CREATIVE)
-                        {
-                            if (event.getPlayer().getInventory().getItemInMainHand().getAmount() <= 1)
+                        if (event.getPlayer().getGameMode() != GameMode.CREATIVE) {
+                            if (event.getPlayer().getInventory().getItemInMainHand().getAmount() <= 1) {
                                 event.getPlayer().getInventory().remove(event.getPlayer().getInventory().getItemInMainHand());
-                            else
-                            {
+                            }
+                            else {
                                 int nextAmount = event.getPlayer().getInventory().getItemInMainHand().getAmount() - 1;
                                 event.getPlayer().getInventory().getItemInMainHand().setAmount(nextAmount);
                             }
                         }
                     }
                 }
-                else if (event.getAction() == Action.RIGHT_CLICK_AIR)
-                {
+                else if (event.getAction() == Action.RIGHT_CLICK_AIR) {
                     //1) Let's prepare to throw the egg. Here we have the unit vector.
                     Vector direction = event.getPlayer().getLocation().getDirection().clone().normalize();
 
@@ -245,8 +223,7 @@ public class EventManager implements Listener
                     item.getLocation().setDirection(direction);
                     item.setVelocity(direction.clone().multiply(1.5f));
 
-                    Main.plugin.getServer().getScheduler().runTaskLater(Main.plugin, () ->
-                    {
+                    Main.plugin.getServer().getScheduler().runTaskLater(Main.plugin, () -> {
                         Location fixedLocation = new Location(item.getLocation().getWorld(),
                                 item.getLocation().getBlockX() + 0.5f,
                                 item.getLocation().getBlockY() + 0.5f,
@@ -256,12 +233,10 @@ public class EventManager implements Listener
                     }, 60);
 
                     // 4) Remove itemstack from user, or reduce amount by 1.
-                    if (event.getPlayer().getGameMode() != GameMode.CREATIVE)
-                    {
-                        if (event.getPlayer().getInventory().getItemInMainHand().getAmount() <= 1)
+                    if (event.getPlayer().getGameMode() != GameMode.CREATIVE) {
+                        if (event.getPlayer().getInventory().getItemInMainHand().getAmount() <= 1) {
                             event.getPlayer().getInventory().remove(event.getPlayer().getInventory().getItemInMainHand());
-                        else
-                        {
+                        } else {
                             int nextAmount = event.getPlayer().getInventory().getItemInMainHand().getAmount() - 1;
                             event.getPlayer().getInventory().getItemInMainHand().setAmount(nextAmount);
                         }

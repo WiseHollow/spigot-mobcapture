@@ -6,8 +6,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.logging.Logger;
 
-public class Main extends JavaPlugin
-{
+public class Main extends JavaPlugin {
     public static Main plugin;
     public static Logger logger;
 
@@ -16,8 +15,7 @@ public class Main extends JavaPlugin
     public static Economy economy = null;
 
     @Override
-    public void onEnable()
-    {
+    public void onEnable() {
         plugin = this;
         saveDefaultConfig();
         getCommand("MobCapture").setExecutor(new Commands());
@@ -30,8 +28,7 @@ public class Main extends JavaPlugin
     }
 
     @Override
-    public void onDisable()
-    {
+    public void onDisable() {
         getLogger().info(getDescription().getName() + " is now disabled!");
     }
 }
