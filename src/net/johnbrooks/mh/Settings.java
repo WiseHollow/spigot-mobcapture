@@ -13,7 +13,7 @@ public class Settings {
 
     public static CostMode costMode = CostMode.ITEM;
 
-    public static Material projectileCatcherMaterial = Material.SNOW_BALL;
+    public static Material projectileCatcherMaterial = Material.SNOWBALL;
 
     public static Material costMaterial = Material.REDSTONE;
     public static int costAmount = 1;

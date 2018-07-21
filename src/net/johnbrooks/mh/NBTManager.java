@@ -1,17 +1,18 @@
 package net.johnbrooks.mh;
 
 import net.johnbrooks.mh.items.CaptureEgg;
-import net.minecraft.server.v1_12_R1.*;
+import net.minecraft.server.v1_13_R1.*;
 import org.bukkit.*;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
-import org.bukkit.craftbukkit.v1_12_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_13_R1.inventory.CraftItemStack;
 import org.bukkit.entity.*;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -23,7 +24,7 @@ public class NBTManager {
 
     public static LivingEntity spawnEntityFromNBTData(ItemStack spawnItem, Location target) {
         if (spawnItem != null) {
-            net.minecraft.server.v1_12_R1.ItemStack nmsStack = CraftItemStack.asNMSCopy(spawnItem);
+            net.minecraft.server.v1_13_R1.ItemStack nmsStack = CraftItemStack.asNMSCopy(spawnItem);
             if (nmsStack.hasTag()) {
                 NBTTagCompound compound = nmsStack.getTag();
                 NBTTagCompound entityDetails = (NBTTagCompound) compound.get("tag");
@@ -54,7 +55,8 @@ public class NBTManager {
 
         NBTTagList potionEffectList = entityDetails.getList("potion effects", ListType.COMPOUND.ordinal());
         for (int i = 0; i < potionEffectList.size(); i++) {
-            NBTTagCompound potionEffectCompound = potionEffectList.get(i);
+            //NBTTagCompound potionEffectCompound = potionEffectList.get(i);
+            NBTTagCompound potionEffectCompound = potionEffectList.getCompound(i);
 
             int duration = potionEffectCompound.getInt("duration");
             int amplifier = potionEffectCompound.getInt("amplifier");
@@ -156,7 +158,7 @@ public class NBTManager {
             for (int i = 0; i < recipeList.size(); i++)
             {
                 //4) Parse the recipe list.
-                NBTTagCompound recipeCompound = recipeList.get(i);
+                NBTTagCompound recipeCompound = recipeList.getCompound(i);
                 int uses = recipeCompound.getInt("uses");
                 int maxUses = recipeCompound.getInt("max uses");
                 boolean experienceReward = recipeCompound.getBoolean("experience reward");
@@ -167,7 +169,7 @@ public class NBTManager {
 
                 //5) Set the resulted item stack to its proper NBT tags.
                 ItemStack resultItemStack = new ItemStack(Material.valueOf(resultString[0]), Integer.parseInt(resultString[1]));
-                net.minecraft.server.v1_12_R1.ItemStack nmsStack = CraftItemStack.asNMSCopy(resultItemStack);
+                net.minecraft.server.v1_13_R1.ItemStack nmsStack = CraftItemStack.asNMSCopy(resultItemStack);
                 nmsStack.setTag(resultTags);
                 resultItemStack = CraftItemStack.asBukkitCopy(nmsStack);
 
@@ -179,9 +181,9 @@ public class NBTManager {
                 for (int j = 0; j < materialsAndAmount.size(); j++)
                 {
                     String[] ingredient = materialsAndAmount.getString(j).split("\\.");
-                    NBTTagCompound tags = tagList.get(j);
+                    NBTTagCompound tags = tagList.getCompound(j);
                     ItemStack itemStack = new ItemStack(Material.valueOf(ingredient[0]), Integer.parseInt(ingredient[1]));
-                    net.minecraft.server.v1_12_R1.ItemStack nmsIngredientStack = CraftItemStack.asNMSCopy(itemStack);
+                    net.minecraft.server.v1_13_R1.ItemStack nmsIngredientStack = CraftItemStack.asNMSCopy(itemStack);
                     nmsIngredientStack.setTag(tags);
                     itemStack = CraftItemStack.asBukkitCopy(nmsIngredientStack);
                     ingredients.add(itemStack);
@@ -216,13 +218,13 @@ public class NBTManager {
                 String[] materialElements = materialList.getString(i).split("\\.");
                 String materialName = materialElements[0];
                 int slot = Integer.parseInt(materialElements[1]);
-                NBTTagCompound tag = tagList.get(i);
+                NBTTagCompound tag = tagList.getCompound(i);
 
                 //3) Create item stack and attach NBT tag to it.
                 ItemStack itemStack = new ItemStack(Material.valueOf(materialName));
                 if (tag != new NBTTagCompound())
                 {
-                    net.minecraft.server.v1_12_R1.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
+                    net.minecraft.server.v1_13_R1.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
                     nmsStack.setTag(tag);
                     itemStack = CraftItemStack.asBukkitCopy(nmsStack);
                 }
@@ -234,7 +236,7 @@ public class NBTManager {
     }
 
     public static ItemStack castEntityDataToItemStackNBT(ItemStack itemStack, LivingEntity livingEntity) {
-        net.minecraft.server.v1_12_R1.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
+        net.minecraft.server.v1_13_R1.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
         NBTTagCompound compound = (nmsStack.hasTag()) ? nmsStack.getTag() : new NBTTagCompound();
 
         //1) Gather capture data
@@ -289,7 +291,7 @@ public class NBTManager {
         NBTTagList potionEffectList = entityDetails.getList("potion effects", ListType.COMPOUND.ordinal());
         if (potionEffectList.size() > 0) {
             for (int i = 0; i < potionEffectList.size(); i++) {
-                NBTTagCompound potionEffectComponent = potionEffectList.get(i);
+                NBTTagCompound potionEffectComponent = potionEffectList.getCompound(i);
                 int duration = potionEffectComponent.getInt("duration");
                 String type = potionEffectComponent.getString("type").replace("_", " ").toLowerCase();
                 type = type.substring(0, 1).toUpperCase() + type.substring(1);
@@ -297,14 +299,12 @@ public class NBTManager {
             }
         }
 
-
         display.set("Lore", list);
         compound.set("display", display);
 
         //) Package and convert
         nmsStack.setTag(compound);
         itemStack = CraftItemStack.asBukkitCopy(nmsStack);
-
 
         return itemStack;
     }
@@ -356,7 +356,7 @@ public class NBTManager {
                 ItemStack itemStack = inventoryHolder.getInventory().getContents()[i];
                 if (itemStack != null)
                 {
-                    net.minecraft.server.v1_12_R1.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
+                    net.minecraft.server.v1_13_R1.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
                     materialList.add(new NBTTagString(itemStack.getType().name() + "." + i));
                     if (nmsStack.hasTag())
                         tagList.add(nmsStack.getTag());
@@ -466,7 +466,7 @@ public class NBTManager {
                 for (ItemStack itemStack : ingredients) {
                     materialsAndAmount.add(new NBTTagString(itemStack.getType().name() + "." + itemStack.getAmount()));
 
-                    net.minecraft.server.v1_12_R1.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
+                    net.minecraft.server.v1_13_R1.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
                     NBTTagCompound itemStackCompound = (nmsStack.hasTag()) ? nmsStack.getTag() : new NBTTagCompound();
                     itemStackTags.add(itemStackCompound);
                 }
@@ -474,7 +474,7 @@ public class NBTManager {
                 int maxUses = recipe.getMaxUses();
                 boolean experienceReward = recipe.hasExperienceReward();
 
-                net.minecraft.server.v1_12_R1.ItemStack nmsStack = CraftItemStack.asNMSCopy(recipe.getResult());
+                net.minecraft.server.v1_13_R1.ItemStack nmsStack = CraftItemStack.asNMSCopy(recipe.getResult());
                 NBTTagCompound resultTags = (nmsStack.hasTag()) ? nmsStack.getTag() : new NBTTagCompound();
 
                 NBTTagCompound recipeCompound = new NBTTagCompound();
