@@ -12,7 +12,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -20,7 +19,7 @@ import java.util.UUID;
 public class NBTManager {
     public enum ListType {
         END, BYTE, SHORT, INT, LONG, FLOAT, DOUBLE, BYTE_ARRAY, STRING, LIST, COMPOUND, INT_ARRAY;
-    };
+    }
 
     public static LivingEntity spawnEntityFromNBTData(ItemStack spawnItem, Location target) {
         if (spawnItem != null) {
