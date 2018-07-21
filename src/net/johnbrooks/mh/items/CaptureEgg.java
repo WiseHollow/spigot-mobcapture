@@ -43,7 +43,7 @@ public class CaptureEgg {
     }
 
     private static ItemStack convertEntityToEntitySpawnEgg(LivingEntity livingEntity) {
-        Material material = Material.getMaterial(livingEntity.getName().toUpperCase() + "_SPAWN_EGG");
+        Material material = Material.getMaterial(livingEntity.getType().name().toUpperCase() + "_SPAWN_EGG");
         ItemStack spawnEgg = new ItemStack(material, 1);
         return NBTManager.castEntityDataToItemStackNBT(spawnEgg, livingEntity);
     }

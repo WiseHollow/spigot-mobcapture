@@ -27,7 +27,7 @@ public class NBTManager {
             net.minecraft.server.v1_13_R1.ItemStack nmsStack = CraftItemStack.asNMSCopy(spawnItem);
             if (nmsStack.hasTag()) {
                 NBTTagCompound compound = nmsStack.getTag();
-                NBTTagCompound entityDetails = (NBTTagCompound) compound.get("tag");
+                NBTTagCompound entityDetails = compound.getCompound("tag");
 
                 String entityType = entityDetails.getString("entity type");
 
@@ -49,13 +49,12 @@ public class NBTManager {
         if (entityDetails.hasKey("custom name"))
             livingEntity.setCustomName(entityDetails.getString("custom name"));
         livingEntity.setAI(entityDetails.getBoolean("ai"));
-        livingEntity.setMaxHealth(entityDetails.getDouble("max health"));
+        livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(entityDetails.getDouble("max health"));
         livingEntity.setHealth(entityDetails.getDouble("health"));
         livingEntity.setGlowing(entityDetails.getBoolean("glowing"));
 
         NBTTagList potionEffectList = entityDetails.getList("potion effects", ListType.COMPOUND.ordinal());
         for (int i = 0; i < potionEffectList.size(); i++) {
-            //NBTTagCompound potionEffectCompound = potionEffectList.get(i);
             NBTTagCompound potionEffectCompound = potionEffectList.getCompound(i);
 
             int duration = potionEffectCompound.getInt("duration");
@@ -201,8 +200,6 @@ public class NBTManager {
         } else if (livingEntity instanceof ZombieVillager) {
             ZombieVillager zombieVillager = (ZombieVillager) livingEntity;
             zombieVillager.setVillagerProfession(Villager.Profession.valueOf(entityDetails.getString("profession")));
-        } else if (livingEntity instanceof Guardian) {
-            ((Guardian) livingEntity).setElder(entityDetails.getBoolean("elder"));
         }
 
         if (livingEntity instanceof InventoryHolder) {
@@ -237,21 +234,21 @@ public class NBTManager {
 
     public static ItemStack castEntityDataToItemStackNBT(ItemStack itemStack, LivingEntity livingEntity) {
         net.minecraft.server.v1_13_R1.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
-        NBTTagCompound compound = (nmsStack.hasTag()) ? nmsStack.getTag() : new NBTTagCompound();
+        NBTTagCompound tagCompound = (nmsStack.hasTag()) ? nmsStack.getTag() : new NBTTagCompound();
 
         //1) Gather capture data
 
-        NBTTagCompound entityDetails = generateNBTTagCompound(compound, livingEntity);
-        compound.set("tag", entityDetails);
+        NBTTagCompound entityDetails = generateNBTTagCompound(tagCompound, livingEntity);
+        tagCompound.set("tag", entityDetails);
 
-        NBTTagCompound display = compound.hasKey("display") ? (NBTTagCompound) compound.get("display") : new NBTTagCompound();
+        NBTTagCompound display = tagCompound.hasKey("display") ? tagCompound.getCompound("display") : new NBTTagCompound();
 
         //2) Colored egg
-        if (Settings.coloredEggs) {
-            NBTTagCompound entityTag = compound.getCompound("EntityTag");
-            entityTag.setString("id", "minecraft:" + livingEntity.getType().name());
-            compound.set("EntityTag", entityTag);
-        }
+//        if (Settings.coloredEggs) {
+//            NBTTagCompound entityTag = tagCompound.getCompound("EntityTag");
+//            entityTag.setString("id", "minecraft:" + livingEntity.getType().name());
+//            tagCompound.set("EntityTag", entityTag);
+//        }
 
         String entityName;
         if (livingEntity.getCustomName() == null) {
@@ -273,10 +270,10 @@ public class NBTManager {
         else
             healthData = String.valueOf(round(livingEntity.getHealth(), 1));
         String maxHealthData;
-        if (round(livingEntity.getMaxHealth(), 1) == (int) livingEntity.getMaxHealth())
-            maxHealthData = String.valueOf((int) livingEntity.getMaxHealth());
+        if (round(livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue(), 1) == (int) livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue())
+            maxHealthData = String.valueOf((int) livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue());
         else
-            maxHealthData = String.valueOf(livingEntity.getMaxHealth());
+            maxHealthData = String.valueOf(livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue());
 
         list.add(new NBTTagString(ChatColor.AQUA + "Health: " + ChatColor.YELLOW + healthData + "/" + maxHealthData));
 
@@ -300,10 +297,10 @@ public class NBTManager {
         }
 
         display.set("Lore", list);
-        compound.set("display", display);
+        tagCompound.set("display", display);
 
         //) Package and convert
-        nmsStack.setTag(compound);
+        nmsStack.setTag(tagCompound);
         itemStack = CraftItemStack.asBukkitCopy(nmsStack);
 
         return itemStack;
@@ -317,7 +314,7 @@ public class NBTManager {
         entityDetails.set("entity type", new NBTTagString(livingEntity.getType().name()));
         entityDetails.setBoolean("ai", livingEntity.hasAI());
         entityDetails.set("health", new NBTTagDouble(livingEntity.getHealth()));
-        entityDetails.set("max health", new NBTTagDouble(livingEntity.getMaxHealth()));
+        entityDetails.set("max health", new NBTTagDouble(livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue()));
         entityDetails.setBoolean("glowing", livingEntity.isGlowing());
 
         NBTTagList potionEffectList = new NBTTagList();
@@ -502,8 +499,6 @@ public class NBTManager {
             ZombieVillager zombieVillager = (ZombieVillager) livingEntity;
             String profession = zombieVillager.getVillagerProfession().name();
             entityDetails.setString("profession", profession);
-        } else if (livingEntity instanceof Guardian) {
-            entityDetails.setBoolean("elder", ((Guardian) livingEntity).isElder());
         }
 
         return entityDetails;
