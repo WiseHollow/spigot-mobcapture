@@ -44,6 +44,16 @@ public class CaptureEgg {
 
     private static ItemStack convertEntityToEntitySpawnEgg(LivingEntity livingEntity) {
         Material material = Material.getMaterial(livingEntity.getType().name().toUpperCase() + "_SPAWN_EGG");
+        if (material == null) {
+            switch (livingEntity.getType()) {
+                case PIG_ZOMBIE:
+                    material = Material.ZOMBIE_PIGMAN_SPAWN_EGG;
+                    break;
+                case MUSHROOM_COW:
+                    material = Material.MOOSHROOM_SPAWN_EGG;
+                    break;
+            }
+        }
         ItemStack spawnEgg = new ItemStack(material, 1);
         return NBTManager.castEntityDataToItemStackNBT(spawnEgg, livingEntity);
     }
