@@ -18,6 +18,7 @@ public class EconomyManager {
 
     private static boolean chargeVault(Player player) {
         if (Main.economy.getBalance(player) >= Settings.costVault) {
+            player.sendMessage(Language.PREFIX + "[Wallet Charged: $" + Settings.costVault + "]");
             Main.economy.withdrawPlayer(player, Settings.costVault);
             return true;
         }
@@ -32,6 +33,8 @@ public class EconomyManager {
                     player.getInventory().remove(itemStack);
                 else
                     itemStack.setAmount(itemStack.getAmount() - Settings.costAmount);
+                String capitalizedMaterial = Settings.costMaterial.name().substring(0, 1) + Settings.costMaterial.name().substring(1).toLowerCase().replace("_", " ");
+                player.sendMessage(Language.PREFIX + "[" + capitalizedMaterial + " Charged: " + Settings.costAmount + "]");
                 return true;
             }
         }
