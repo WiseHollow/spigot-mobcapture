@@ -9,6 +9,7 @@ import org.bukkit.craftbukkit.v1_13_R1.inventory.CraftItemStack;
 import org.bukkit.entity.*;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -232,23 +233,7 @@ public class NBTManager {
     }
 
     public static ItemStack castEntityDataToItemStackNBT(ItemStack itemStack, LivingEntity livingEntity) {
-        net.minecraft.server.v1_13_R1.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
-        NBTTagCompound tagCompound = (nmsStack.hasTag()) ? nmsStack.getTag() : new NBTTagCompound();
-
-        //1) Gather capture data
-
-        NBTTagCompound entityDetails = generateNBTTagCompound(tagCompound, livingEntity);
-        tagCompound.set("tag", entityDetails);
-
-        NBTTagCompound display = tagCompound.hasKey("display") ? tagCompound.getCompound("display") : new NBTTagCompound();
-
-        //2) Colored egg
-//        if (Settings.coloredEggs) {
-//            NBTTagCompound entityTag = tagCompound.getCompound("EntityTag");
-//            entityTag.setString("id", "minecraft:" + livingEntity.getType().name());
-//            tagCompound.set("EntityTag", entityTag);
-//        }
-
+        //2) Figure entity name
         String entityName;
         if (livingEntity.getCustomName() == null) {
             entityName = livingEntity.getType().name().replace("_", " ").toLowerCase();
@@ -257,8 +242,23 @@ public class NBTManager {
         else
             entityName = livingEntity.getCustomName();
 
+        ItemMeta itemMeta = itemStack.getItemMeta();
+        itemMeta.setDisplayName(CaptureEgg.TITLE_PREFIX + entityName);
+        itemStack.setItemMeta(itemMeta);
+
+        net.minecraft.server.v1_13_R1.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
+        NBTTagCompound tagCompound = (nmsStack.hasTag()) ? nmsStack.getTag() : new NBTTagCompound();
+
+        //2) Gather capture data
+
+        NBTTagCompound entityDetails = generateNBTTagCompound(tagCompound, livingEntity);
+        tagCompound.set("tag", entityDetails);
+
+        NBTTagCompound display = tagCompound.hasKey("display") ? tagCompound.getCompound("display") : new NBTTagCompound();
+
         //3) What is the name of the item stack
-        display.set("Name", new NBTTagString(CaptureEgg.TITLE_PREFIX + entityName));
+        //TODO: Re-enable this when NBT Tags are finished in Spigot. SPIGOT BUG
+        //display.set("Name", new NBTTagString(CaptureEgg.TITLE_PREFIX + entityName));
         //4) Setup lore
         NBTTagList list = new NBTTagList();
         list.add(new NBTTagString(ChatColor.AQUA + "Creature Type: " + ChatColor.YELLOW + livingEntity.getType().name()));

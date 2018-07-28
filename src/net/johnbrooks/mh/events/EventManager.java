@@ -49,11 +49,9 @@ public class EventManager implements Listener {
             //2) Check which projectile is being launched.
             ItemStack projectileItemStack = null;
             if (player.getInventory().getItemInMainHand().getType() == Material.BOW) {
-                for (ItemStack itemStack : player.getInventory().getContents()) {
-                    if (itemStack != null && itemStack.getType() == Material.ARROW) {
-                        projectileItemStack = itemStack;
-                        break;
-                    }
+                ItemStack itemStack = player.getInventory().getItem(player.getInventory().first(Material.ARROW));
+                if (itemStack != null && itemStack.getType() == Material.ARROW) {
+                    projectileItemStack = itemStack;
                 }
             } else {
                 projectileItemStack = player.getInventory().getItemInMainHand();
