@@ -1,6 +1,6 @@
 package net.johnbrooks.mh;
 
-import com.palmergames.bukkit.towny.Towny;
+import me.ryanhamshire.GriefPrevention.GriefPrevention;
 import net.johnbrooks.mh.events.EventManager;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -15,7 +15,7 @@ public class Main extends JavaPlugin {
     public static PermissionManager permissionManager = null;
     public static Economy economy = null;
 
-    public static Towny towny;
+    public static GriefPrevention griefPrevention;
 
     @Override
     public void onEnable() {

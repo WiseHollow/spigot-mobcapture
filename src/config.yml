@@ -13,3 +13,5 @@ Disabled Worlds: []
 Colored Eggs: true
 # Should we hook into Towny
 Towny Hook: false
+# Should we hook into GriefPrevention
+GriefPrevention Hook: false

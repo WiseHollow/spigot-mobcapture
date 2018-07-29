@@ -1,6 +1,7 @@
 package net.johnbrooks.mh;
 
 import com.palmergames.bukkit.towny.Towny;
+import me.ryanhamshire.GriefPrevention.GriefPrevention;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -25,6 +26,7 @@ public class Settings {
     private static List<String> disabledWorlds = new ArrayList<>();
 
     public static boolean townyHook = false;
+    public static boolean griefPreventionHook = false;
 
     public static void load() {
         // 1) Grab configuration for plugin.
@@ -62,9 +64,15 @@ public class Settings {
         disabledWorlds = config.getStringList("Disabled Worlds");
         coloredEggs = config.getBoolean("Colored Eggs");
         townyHook = config.getBoolean("Towny Hook");
+        griefPreventionHook = config.getBoolean("GriefPrevention Hook");
 
         if (townyHook) {
-            Main.logger.info("Towny hook: true");
+            Main.logger.info("Towny hook: enabled");
+        }
+        if (griefPreventionHook) {
+            Main.griefPrevention = GriefPrevention.instance;
+            Main.logger.info("GriefPrevention hook " + (Main.griefPrevention != null
+                    ? "was successful!" : "has failed!"));
         }
     }
 

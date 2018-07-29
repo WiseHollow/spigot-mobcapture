@@ -1,6 +1,8 @@
 package net.johnbrooks.mh.events;
 
 import com.palmergames.bukkit.towny.object.*;
+import me.ryanhamshire.GriefPrevention.Claim;
+import me.ryanhamshire.GriefPrevention.GriefPrevention;
 import net.johnbrooks.mh.*;
 import net.johnbrooks.mh.items.CaptureEgg;
 
@@ -25,6 +27,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.Vector;
 
 public class EventManager implements Listener {
+
     public void initialize() {
         register(this);
     }
@@ -147,6 +150,13 @@ public class EventManager implements Listener {
                         return;
                     }
                 }
+            }
+
+            if (Settings.griefPreventionHook &&
+                    Main.griefPrevention.claimsEnabledForWorld(event.getEntity().getWorld()) &&
+                    Main.griefPrevention.allowBuild(player, event.getEntity().getLocation()) != null) {
+                player.sendMessage(Language.PREFIX + "You do not have permission to capture creatures here.");
+                return;
             }
 
             //4) Check if they have enough money/items.
