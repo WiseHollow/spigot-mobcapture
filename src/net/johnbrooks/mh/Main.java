@@ -1,5 +1,6 @@
 package net.johnbrooks.mh;
 
+import com.palmergames.bukkit.towny.Towny;
 import net.johnbrooks.mh.events.EventManager;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -13,6 +14,8 @@ public class Main extends JavaPlugin {
     public static EventManager eventManager = null;
     public static PermissionManager permissionManager = null;
     public static Economy economy = null;
+
+    public static Towny towny;
 
     @Override
     public void onEnable() {
@@ -30,5 +33,9 @@ public class Main extends JavaPlugin {
     @Override
     public void onDisable() {
         getLogger().info(getDescription().getName() + " is now disabled!");
+    }
+
+    private void hookToTowny() {
+
     }
 }

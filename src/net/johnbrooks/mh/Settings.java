@@ -1,5 +1,6 @@
 package net.johnbrooks.mh;
 
+import com.palmergames.bukkit.towny.Towny;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -22,6 +23,8 @@ public class Settings {
     public static boolean coloredEggs = true;
 
     private static List<String> disabledWorlds = new ArrayList<>();
+
+    public static boolean townyHook = false;
 
     public static void load() {
         // 1) Grab configuration for plugin.
@@ -58,6 +61,11 @@ public class Settings {
         costVault = config.getDouble("Cost Vault");
         disabledWorlds = config.getStringList("Disabled Worlds");
         coloredEggs = config.getBoolean("Colored Eggs");
+        townyHook = config.getBoolean("Towny Hook");
+
+        if (townyHook) {
+            Main.logger.info("Towny hook: true");
+        }
     }
 
     public static boolean isDisabledWorld(String worldName) {

@@ -11,3 +11,5 @@ Cost Vault: 100
 Disabled Worlds: []
 # Should eggs take the color of the creature they belong to?
 Colored Eggs: true
+# Should we hook into Towny
+Towny Hook: false

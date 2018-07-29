@@ -1,8 +1,10 @@
 package net.johnbrooks.mh.events;
 
+import com.palmergames.bukkit.towny.object.*;
 import net.johnbrooks.mh.*;
 import net.johnbrooks.mh.items.CaptureEgg;
 
+import java.util.Optional;
 import java.util.Random;
 
 import org.bukkit.*;
@@ -129,6 +131,22 @@ public class EventManager implements Listener {
             if (!Main.permissionManager.hasPermissionToCapture(player, livingEntity)) {
                 player.sendMessage(Language.PREFIX + "You do not have permission to capture this creature.");
                 return;
+            }
+
+            if (Settings.townyHook) {
+                String worldName = event.getEntity().getWorld().getName();
+                int x = event.getEntity().getLocation().getChunk().getX();
+                int z = event.getEntity().getLocation().getChunk().getZ();
+                Optional<Town> optionalTown = TownyUniverse.getDataSource().getTowns().stream()
+                        .filter(town -> town.getWorld().getName().equalsIgnoreCase(worldName) &&
+                                town.getTownBlocks().stream().anyMatch(mTownBlock -> mTownBlock.getX() == x && mTownBlock.getZ() == z)).findFirst();
+                if (optionalTown.isPresent()) {
+                    Town town = optionalTown.get();
+                    if (!town.hasResident(player.getName())) {
+                        player.sendMessage(Language.PREFIX + "You do not have permission to capture creatures here.");
+                        return;
+                    }
+                }
             }
 
             //4) Check if they have enough money/items.
