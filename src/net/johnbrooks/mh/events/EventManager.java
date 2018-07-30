@@ -159,7 +159,13 @@ public class EventManager implements Listener {
                 return;
             }
 
-            //4) Check if they have enough money/items.
+            //4) Check if this is a disabled world.
+            if (Settings.isDisabledWorld(player.getWorld().getName())) {
+                player.sendMessage(Language.PREFIX + "You cannot capture a creature in this world!");
+                return;
+            }
+
+            //5) Check if they have enough money/items.
             if (!player.hasPermission(Main.permissionManager.NoCost)) {
                 if (!EconomyManager.chargePlayer(player))
                 {
@@ -171,24 +177,17 @@ public class EventManager implements Listener {
                 }
             }
 
-            //5) Check if this is a disabled world.
-            if (Settings.isDisabledWorld(player.getWorld().getName())) {
-                player.sendMessage(Language.PREFIX + "You cannot capture a creature in this world!");
-            } else {
-                //6) Setup capture event and run it.
-                CreatureCaptureEvent creatureCaptureEvent = new CreatureCaptureEvent(player, livingEntity);
-                callEvent(creatureCaptureEvent);
-                if (!creatureCaptureEvent.isCancelled()) {
-                    //7) Remove the damage from the entity so we don't kill it.
-                    event.setDamage(0.0d);
+            //6) Setup capture event and run it.
+            CreatureCaptureEvent creatureCaptureEvent = new CreatureCaptureEvent(player, livingEntity);
+            callEvent(creatureCaptureEvent);
+            if (!creatureCaptureEvent.isCancelled()) {
+                //7) Remove the damage from the entity so we don't kill it.
+                event.setDamage(0.0d);
 
-                    //8) Capture Logic
-                    CaptureEgg.captureLivingEntity(creatureCaptureEvent.getTargetEntity());
-                    livingEntity.remove();
-                }
+                //8) Capture Logic
+                CaptureEgg.captureLivingEntity(creatureCaptureEvent.getTargetEntity());
+                livingEntity.remove();
             }
-
-
         }
     }
 
