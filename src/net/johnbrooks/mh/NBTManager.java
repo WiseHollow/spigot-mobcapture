@@ -89,6 +89,16 @@ public class NBTManager {
             ageable.setAge(entityDetails.getInt("age"));
         }
 
+        if (livingEntity instanceof Tameable) {
+            Tameable tameable = (Tameable) livingEntity;
+            tameable.setTamed(entityDetails.getBoolean("tamed"));
+            if (tameable.isTamed()) {
+                OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(UUID.fromString(entityDetails.getString("owner")));
+                if (offlinePlayer != null)
+                    tameable.setOwner(offlinePlayer);
+            }
+        }
+
         if (livingEntity instanceof Wolf) {
             // Is a wolf
             Wolf wolf = (Wolf) livingEntity;
@@ -133,12 +143,6 @@ public class NBTManager {
             abstractHorse.setJumpStrength(entityDetails.getDouble("jump strength"));
             abstractHorse.setTamed(entityDetails.getBoolean("tamed"));
             abstractHorse.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(entityDetails.getDouble("speed"));
-
-            if (abstractHorse.isTamed()) {
-                OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(UUID.fromString(entityDetails.getString("owner")));
-                if (offlinePlayer != null)
-                    abstractHorse.setOwner(offlinePlayer);
-            }
             //TODO: INVENTORY CONTENTS
         }
         else if (livingEntity instanceof Villager) {
@@ -304,6 +308,17 @@ public class NBTManager {
             Ageable ageable = (Ageable) livingEntity;
             if (!ageable.isAdult())
                 list.add(new NBTTagString(ChatColor.AQUA + "Age: " + ChatColor.YELLOW + "Baby"));
+        }
+
+        // if tamed
+        if (livingEntity instanceof Tameable) {
+            Tameable tameable = (Tameable) livingEntity;
+            list.add(new NBTTagString(ChatColor.AQUA + "Tamed: " + ChatColor.YELLOW + (tameable.isTamed() ? "Yes" : "No")));
+        }
+
+        if (livingEntity instanceof Parrot) {
+            Parrot parrot = (Parrot) livingEntity;
+            list.add(new NBTTagString(ChatColor.AQUA + "Color: " + ChatColor.YELLOW + parrot.getVariant().name()));
         }
 
         //6) If potion effects active, display them
