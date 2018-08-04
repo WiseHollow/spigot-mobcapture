@@ -206,7 +206,7 @@ public class NBTManager {
             Llama.Color color = Llama.Color.valueOf(entityDetails.getString("color"));
 
 
-            Llama llama = (Llama) entityDetails;
+            Llama llama = (Llama) livingEntity;
             llama.setStrength(strength);
             llama.setColor(color);
         }
