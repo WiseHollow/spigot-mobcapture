@@ -128,18 +128,16 @@ public class NBTManager {
         } else if (livingEntity instanceof Rabbit) {
             Rabbit rabbit = (Rabbit) livingEntity;
             rabbit.setRabbitType(Rabbit.Type.valueOf(entityDetails.getString("rabbit type")));
-        } else if (livingEntity instanceof Horse) {
-            Horse horse = (Horse) livingEntity;
-            horse.setColor(Horse.Color.valueOf(entityDetails.getString("color")));
-            horse.setStyle(Horse.Style.valueOf(entityDetails.getString("style")));
-            horse.setJumpStrength(entityDetails.getDouble("jump strength"));
-            horse.setTamed(entityDetails.getBoolean("tamed"));
-            horse.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(entityDetails.getDouble("speed"));
+        } else if (livingEntity instanceof AbstractHorse) {
+            AbstractHorse abstractHorse = (AbstractHorse) livingEntity;
+            abstractHorse.setJumpStrength(entityDetails.getDouble("jump strength"));
+            abstractHorse.setTamed(entityDetails.getBoolean("tamed"));
+            abstractHorse.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(entityDetails.getDouble("speed"));
 
-            if (horse.isTamed()) {
+            if (abstractHorse.isTamed()) {
                 OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(UUID.fromString(entityDetails.getString("owner")));
                 if (offlinePlayer != null)
-                    horse.setOwner(offlinePlayer);
+                    abstractHorse.setOwner(offlinePlayer);
             }
             //TODO: INVENTORY CONTENTS
         }
@@ -238,6 +236,21 @@ public class NBTManager {
                 //4) Place in inventory at correct slot number.
                 inventoryHolder.getInventory().setItem(slot, itemStack);
             }
+        }
+
+        // horse types
+        if (livingEntity instanceof Llama) {
+            Llama abstractHorse = (Llama) livingEntity;
+            Llama.Color color = Llama.Color.valueOf(entityDetails.getString("color"));
+            Integer strength = entityDetails.getInt("strength");
+            abstractHorse.setColor(color);
+            abstractHorse.setStrength(strength);
+        } else if (livingEntity instanceof Horse) {
+            Horse horse = (Horse) livingEntity;
+            Horse.Color color = Horse.Color.valueOf(entityDetails.getString("color"));
+            Horse.Style style = Horse.Style.valueOf(entityDetails.getString("style"));
+            horse.setColor(color);
+            horse.setStyle(style);
         }
 
     }
@@ -417,44 +430,13 @@ public class NBTManager {
             }
         } else if (livingEntity instanceof Rabbit) {
             entityDetails.setString("rabbit type", ((Rabbit) livingEntity).getRabbitType().name());
-        } else if (livingEntity instanceof Horse) {
-            Horse horse = (Horse) livingEntity;
-
-            String color = horse.getColor().name();
-            String style = horse.getStyle().name();
-            String variant = horse.getVariant().name();
-            double jumpStrength = horse.getJumpStrength();
-            boolean tamed = horse.isTamed();
+        } else if (livingEntity instanceof AbstractHorse) {
+            AbstractHorse abstractHorse = (AbstractHorse) livingEntity;
+            double jumpStrength = abstractHorse.getJumpStrength();
             double speed = livingEntity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).getBaseValue();
 
-            entityDetails.setString("color", color);
-            entityDetails.setString("style", style);
-            entityDetails.setString("variant", variant);
-            entityDetails.setDouble("jump strength", jumpStrength);
-            entityDetails.setBoolean("tamed", tamed);
-            entityDetails.setDouble("speed", speed);
-
-            if (tamed) {
-                String ownerUUID = horse.getOwner().getUniqueId().toString();
-                entityDetails.setString("owner", ownerUUID);
-            }
-
-        } else if (livingEntity instanceof Donkey) {
-            Donkey donkey = (Donkey) livingEntity;
-            String variant = donkey.getVariant().name();
-            double jumpStrength = donkey.getJumpStrength();
-            boolean tamed = donkey.isTamed();
-            double speed = livingEntity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).getBaseValue();
-
-            entityDetails.setString("variant", variant);
             entityDetails.setDouble("jump strength", jumpStrength);
             entityDetails.setDouble("speed", speed);
-            entityDetails.setBoolean("tamed", tamed);
-
-            if (tamed) {
-                String ownerUUID = donkey.getOwner().getUniqueId().toString();
-                entityDetails.setString("owner", ownerUUID);
-            }
 
         } else if (livingEntity instanceof Villager) {
             Villager villager = (Villager) livingEntity;
@@ -511,13 +493,30 @@ public class NBTManager {
             Parrot parrot = (Parrot) livingEntity;
             Parrot.Variant color = parrot.getVariant();
             entityDetails.setString("variant", color.name());
-        } else if (livingEntity instanceof Llama) {
-            Llama llama = (Llama) livingEntity;
-            Llama.Color color = llama.getColor();
-            Integer strength = llama.getStrength();
+        }
 
+        if (livingEntity instanceof Tameable) {
+            Tameable tameable = (Tameable) livingEntity;
+            boolean tamed = tameable.isTamed();
+            if (tamed) {
+                String ownerUUID = tameable.getOwner().getUniqueId().toString();
+                entityDetails.setString("owner", ownerUUID);
+            }
+        }
+
+        // horse types
+        if (livingEntity instanceof Llama) {
+            Llama abstractHorse = (Llama) livingEntity;
+            String color = abstractHorse.getColor().name();
+            Integer strength = abstractHorse.getStrength();
+            entityDetails.setString("color", color);
             entityDetails.setInt("strength", strength);
-            entityDetails.setString("color", color.name());
+        } else if (livingEntity instanceof Horse) {
+            Horse abstractHorse = (Horse) livingEntity;
+            String color = abstractHorse.getColor().name();
+            String style = abstractHorse.getStyle().name();
+            entityDetails.setString("color", color);
+            entityDetails.setString("style", style);
         }
 
         return entityDetails;
