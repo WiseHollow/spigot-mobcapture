@@ -84,9 +84,9 @@ public class NBTManager {
             livingEntity.addPotionEffect(potionEffect);
         }
 
-        if (livingEntity instanceof Animals) {
-            Animals animals = (Animals) livingEntity;
-            animals.setAge(entityDetails.getInt("age"));
+        if (livingEntity instanceof Ageable) {
+            Ageable ageable = (Ageable) livingEntity;
+            ageable.setAge(entityDetails.getInt("age"));
         }
 
         if (livingEntity instanceof Wolf) {
@@ -200,6 +200,16 @@ public class NBTManager {
         } else if (livingEntity instanceof ZombieVillager) {
             ZombieVillager zombieVillager = (ZombieVillager) livingEntity;
             zombieVillager.setVillagerProfession(Villager.Profession.valueOf(entityDetails.getString("profession")));
+        } else if (livingEntity instanceof Parrot) {
+            ((Parrot) livingEntity).setVariant(Parrot.Variant.valueOf(entityDetails.getString("variant")));
+        } else if (livingEntity instanceof Llama) {
+            Integer strength = entityDetails.getInt("strength");
+            Llama.Color color = Llama.Color.valueOf(entityDetails.getString("color"));
+
+
+            Llama llama = (Llama) livingEntity;
+            llama.setStrength(strength);
+            llama.setColor(color);
         }
 
         if (livingEntity instanceof InventoryHolder) {
@@ -337,10 +347,9 @@ public class NBTManager {
         }
         entityDetails.set("potion effects", potionEffectList);
 
-        if (livingEntity instanceof Animals) {
-            Animals animals = (Animals) livingEntity;
-            int age = animals.getAge();
-            entityDetails.set("age", new NBTTagInt(age));
+        if (livingEntity instanceof Ageable) {
+            Ageable ageable = (Ageable) livingEntity;
+            entityDetails.setInt("age", ageable.getAge());
         }
         if (livingEntity instanceof InventoryHolder) {
             InventoryHolder inventoryHolder = (InventoryHolder) livingEntity;
@@ -498,6 +507,17 @@ public class NBTManager {
             ZombieVillager zombieVillager = (ZombieVillager) livingEntity;
             String profession = zombieVillager.getVillagerProfession().name();
             entityDetails.setString("profession", profession);
+        } else if (livingEntity instanceof Parrot) {
+            Parrot parrot = (Parrot) livingEntity;
+            Parrot.Variant color = parrot.getVariant();
+            entityDetails.setString("variant", color.name());
+        } else if (livingEntity instanceof Llama) {
+            Llama llama = (Llama) livingEntity;
+            Llama.Color color = llama.getColor();
+            Integer strength = llama.getStrength();
+
+            entityDetails.setInt("strength", strength);
+            entityDetails.setString("color", color.name());
         }
 
         return entityDetails;
