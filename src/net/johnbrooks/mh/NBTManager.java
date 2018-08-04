@@ -513,6 +513,7 @@ public class NBTManager {
         if (livingEntity instanceof Tameable) {
             Tameable tameable = (Tameable) livingEntity;
             boolean tamed = tameable.isTamed();
+            entityDetails.setBoolean("tamed", tamed);
             if (tamed) {
                 String ownerUUID = tameable.getOwner().getUniqueId().toString();
                 entityDetails.setString("owner", ownerUUID);
