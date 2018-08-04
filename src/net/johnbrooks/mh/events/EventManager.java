@@ -1,8 +1,6 @@
 package net.johnbrooks.mh.events;
 
 import com.palmergames.bukkit.towny.object.*;
-import me.ryanhamshire.GriefPrevention.Claim;
-import me.ryanhamshire.GriefPrevention.GriefPrevention;
 import net.johnbrooks.mh.*;
 import net.johnbrooks.mh.items.CaptureEgg;
 

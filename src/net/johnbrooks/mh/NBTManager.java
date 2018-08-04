@@ -7,12 +7,15 @@ import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.craftbukkit.v1_12_R1.inventory.CraftItemStack;
 import org.bukkit.entity.*;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.LlamaInventory;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -81,11 +84,6 @@ public class NBTManager {
             else
                 potionEffect = new PotionEffect(potionEffectType, duration, amplifier, isAmbient, hasParticles);
             livingEntity.addPotionEffect(potionEffect);
-        }
-
-        if (livingEntity instanceof Animals) {
-            Animals animals = (Animals) livingEntity;
-            animals.setAge(entityDetails.getInt("age"));
         }
 
         if (livingEntity instanceof Wolf) {
@@ -201,6 +199,21 @@ public class NBTManager {
             zombieVillager.setVillagerProfession(Villager.Profession.valueOf(entityDetails.getString("profession")));
         } else if (livingEntity instanceof Guardian) {
             ((Guardian) livingEntity).setElder(entityDetails.getBoolean("elder"));
+        } else if (livingEntity instanceof Parrot) {
+            ((Parrot) livingEntity).setVariant(Parrot.Variant.valueOf(entityDetails.getString("variant")));
+        } else if (livingEntity instanceof Llama) {
+            Integer strength = entityDetails.getInt("strength");
+            Llama.Color color = Llama.Color.valueOf(entityDetails.getString("color"));
+
+
+            Llama llama = (Llama) entityDetails;
+            llama.setStrength(strength);
+            llama.setColor(color);
+        }
+
+        if (livingEntity instanceof Ageable) {
+            Ageable ageable = (Ageable) livingEntity;
+            ageable.setAge(entityDetails.getInt("age"));
         }
 
         if (livingEntity instanceof InventoryHolder) {
@@ -341,11 +354,6 @@ public class NBTManager {
         }
         entityDetails.set("potion effects", potionEffectList);
 
-        if (livingEntity instanceof Animals) {
-            Animals animals = (Animals) livingEntity;
-            int age = animals.getAge();
-            entityDetails.set("age", new NBTTagInt(age));
-        }
         if (livingEntity instanceof InventoryHolder) {
             InventoryHolder inventoryHolder = (InventoryHolder) livingEntity;
 
@@ -504,6 +512,22 @@ public class NBTManager {
             entityDetails.setString("profession", profession);
         } else if (livingEntity instanceof Guardian) {
             entityDetails.setBoolean("elder", ((Guardian) livingEntity).isElder());
+        } else if (livingEntity instanceof Parrot) {
+            Parrot parrot = (Parrot) livingEntity;
+            Parrot.Variant color = parrot.getVariant();
+            entityDetails.setString("variant", color.name());
+        } else if (livingEntity instanceof Llama) {
+            Llama llama = (Llama) livingEntity;
+            Llama.Color color = llama.getColor();
+            Integer strength = llama.getStrength();
+
+            entityDetails.setInt("strength", strength);
+            entityDetails.setString("color", color.name());
+        }
+
+        if (livingEntity instanceof Ageable) {
+            Integer age = ((Ageable) livingEntity).getAge();
+            entityDetails.setInt("age", age);
         }
 
         return entityDetails;
