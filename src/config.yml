@@ -11,3 +11,5 @@ Cost Vault: 100
 Disabled Worlds: []
 # Should eggs take the color of the creature they belong to?
 Colored Eggs: true
+# Are you using GriefPrevention?
+GriefPrevention Hook: false

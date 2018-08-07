@@ -4,7 +4,7 @@ author: WiseHollow
 main: net.johnbrooks.mh.Main
 api-version: 1.13
 
-soft-depend: [ Vault ]
+softdepend: [ Vault, GriefPrevention ]
 
 permissions:
   MobCapture.Admin:
