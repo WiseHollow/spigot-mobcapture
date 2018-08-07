@@ -34,8 +34,4 @@ public class Main extends JavaPlugin {
     public void onDisable() {
         getLogger().info(getDescription().getName() + " is now disabled!");
     }
-
-    private void hookToTowny() {
-
-    }
 }
