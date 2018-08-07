@@ -1,5 +1,6 @@
 package net.johnbrooks.mh;
 
+import me.ryanhamshire.GriefPrevention.GriefPrevention;
 import net.johnbrooks.mh.events.EventManager;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -13,6 +14,8 @@ public class Main extends JavaPlugin {
     public static EventManager eventManager = null;
     public static PermissionManager permissionManager = null;
     public static Economy economy = null;
+
+    public static GriefPrevention griefPrevention;
 
     @Override
     public void onEnable() {

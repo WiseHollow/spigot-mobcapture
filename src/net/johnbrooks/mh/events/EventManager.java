@@ -129,6 +129,13 @@ public class EventManager implements Listener {
                 return;
             }
 
+            if (Settings.griefPreventionHook &&
+                    Main.griefPrevention.claimsEnabledForWorld(event.getEntity().getWorld()) &&
+                    Main.griefPrevention.allowBuild(player, event.getEntity().getLocation()) != null) {
+                player.sendMessage(Language.PREFIX + "You do not have permission to capture creatures here.");
+                return;
+            }
+
             //4) Check if this is a disabled world.
             if (Settings.isDisabledWorld(player.getWorld().getName())) {
                 player.sendMessage(Language.PREFIX + "You cannot capture a creature in this world!");
