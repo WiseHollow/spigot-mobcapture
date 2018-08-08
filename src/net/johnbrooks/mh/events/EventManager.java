@@ -1,10 +1,8 @@
 package net.johnbrooks.mh.events;
 
-import com.palmergames.bukkit.towny.object.*;
 import net.johnbrooks.mh.*;
 import net.johnbrooks.mh.items.CaptureEgg;
 
-import java.util.Optional;
 import java.util.Random;
 
 import org.bukkit.*;
@@ -28,6 +26,9 @@ public class EventManager implements Listener {
 
     public void initialize() {
         register(this);
+        if (Settings.townyHook) {
+            register(new TownyCaptureEvents());
+        }
     }
 
     private void register(Listener listener) {
@@ -134,22 +135,6 @@ public class EventManager implements Listener {
                 return;
             }
 
-            if (Settings.townyHook) {
-                String worldName = event.getEntity().getWorld().getName();
-                int x = event.getEntity().getLocation().getChunk().getX();
-                int z = event.getEntity().getLocation().getChunk().getZ();
-                Optional<Town> optionalTown = TownyUniverse.getDataSource().getTowns().stream()
-                        .filter(town -> town.getWorld().getName().equalsIgnoreCase(worldName) &&
-                                town.getTownBlocks().stream().anyMatch(mTownBlock -> mTownBlock.getX() == x && mTownBlock.getZ() == z)).findFirst();
-                if (optionalTown.isPresent()) {
-                    Town town = optionalTown.get();
-                    if (!town.hasResident(player.getName())) {
-                        player.sendMessage(Language.PREFIX + "You do not have permission to capture creatures here.");
-                        return;
-                    }
-                }
-            }
-
             if (Settings.griefPreventionHook &&
                     Main.griefPrevention.claimsEnabledForWorld(event.getEntity().getWorld()) &&
                     Main.griefPrevention.allowBuild(player, event.getEntity().getLocation()) != null) {
@@ -164,7 +149,7 @@ public class EventManager implements Listener {
             }
 
             //5) Check if they have enough money/items.
-            if (!player.hasPermission(Main.permissionManager.NoCost)) {
+            if (!player.hasPermission(Main.permissionManager.NoCost) && Settings.costMode != Settings.CostMode.NONE) {
                 if (!EconomyManager.chargePlayer(player))
                 {
                     player.sendMessage(Language.PREFIX + "You do not have enough " +

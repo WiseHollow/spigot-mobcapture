@@ -23,10 +23,10 @@ public class Main extends JavaPlugin {
         saveDefaultConfig();
         getCommand("MobCapture").setExecutor(new Commands());
         logger = getLogger();
+        Settings.load();
         permissionManager = new PermissionManager();
         eventManager = new EventManager();
         eventManager.initialize();
-        Settings.load();
         getLogger().info(getDescription().getName() + " is now enabled!");
     }
 

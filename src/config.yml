@@ -1,6 +1,6 @@
 # What projectile catches the creature.
 Projectile Catcher: EGG
-# Cost Mode: [ ITEM, VAULT ]
+# Cost Mode: [ NONE, ITEM, VAULT ]
 Cost Mode: ITEM
 # When in ITEM mode, a player must have this item to catch a creature.
 Cost Item: REDSTONE
