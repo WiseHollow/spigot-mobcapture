@@ -3,6 +3,9 @@ package net.johnbrooks.mh;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.Arrays;
+import java.util.Optional;
+
 public class EconomyManager {
 
     public static boolean chargePlayer(Player player) {
@@ -27,21 +30,22 @@ public class EconomyManager {
         return false;
     }
 
-    private static boolean chargeItem(Player player)
-    {
-        for (ItemStack itemStack : player.getInventory().getContents()) {
-            if (itemStack != null && itemStack.getType().name().equalsIgnoreCase(Settings.costMaterial.name()) && itemStack.getAmount() >= Settings.costAmount) {
-                if (itemStack.getAmount() == Settings.costAmount)
-                    player.getInventory().remove(itemStack);
-                else
-                    itemStack.setAmount(itemStack.getAmount() - Settings.costAmount);
-                String capitalizedMaterial = Settings.costMaterial.name().substring(0, 1) + Settings.costMaterial.name().substring(1).toLowerCase().replace("_", " ");
-                if (Settings.costAmount > 0) {
-                    player.sendMessage(Language.PREFIX + "[" + capitalizedMaterial + " Charged: " + Settings.costAmount + "]");
-                }
-                return true;
+    private static boolean chargeItem(Player player) {
+        Optional<ItemStack> itemStackOptional = Arrays.stream(player.getInventory().getContents())
+                .filter(itemStack -> itemStack != null && itemStack.getType().equals(Settings.costMaterial) && itemStack.getAmount() >= Settings.costAmount)
+                .findAny();
+
+        if (itemStackOptional.isPresent()) {
+            ItemStack itemStack = itemStackOptional.get();
+            itemStack.setAmount(itemStack.getAmount() - Settings.costAmount);
+
+            String capitalizedMaterial = Settings.costMaterial.name().substring(0, 1) + Settings.costMaterial.name().substring(1).toLowerCase().replace("_", " ");
+            if (Settings.costAmount > 0) {
+                player.sendMessage(Language.PREFIX + "[" + capitalizedMaterial + " Charged: " + Settings.costAmount + "]");
             }
+            return true;
         }
+
         return false;
     }
 }

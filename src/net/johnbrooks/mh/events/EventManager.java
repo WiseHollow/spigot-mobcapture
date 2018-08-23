@@ -44,16 +44,21 @@ public class EventManager implements Listener {
         //
 
         //1) If a player is shooting a projectile.
-        if (!event.isCancelled() && event.getEntity().getShooter() != null && event.getEntity().getShooter() instanceof Player) {
+        if (!event.isCancelled() && event.getEntity() != null && event.getEntity().getShooter() != null &&
+                event.getEntity().getShooter() instanceof Player) {
             Player player = (Player) event.getEntity().getShooter();
 
             //2) Check which projectile is being launched.
             ItemStack projectileItemStack = null;
             if (player.getInventory().getItemInMainHand().getType() == Material.BOW) {
-                ItemStack itemStack = player.getInventory().getItem(player.getInventory().first(Material.ARROW));
-                if (itemStack != null && itemStack.getType() == Material.ARROW) {
-                    projectileItemStack = itemStack;
+                int slot = player.getInventory().first(Material.ARROW);
+                if (slot >= 0) {
+                    ItemStack itemStack = player.getInventory().getItem(slot);
+                    if (itemStack != null && itemStack.getType() == Material.ARROW) {
+                        projectileItemStack = itemStack;
+                    }
                 }
+
             } else {
                 projectileItemStack = player.getInventory().getItemInMainHand();
             }
@@ -190,7 +195,7 @@ public class EventManager implements Listener {
                 }
 
                 if (!event.isCancelled() && event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-                    Location target = event.getClickedBlock().getLocation().clone();
+                    Location target = event.getClickedBlock().getLocation().clone().add(0.5, 0, 0.5);
 
                     if (event.getBlockFace() != BlockFace.UP) {
                         // Make a friendly location to spawn the entity.
@@ -212,7 +217,7 @@ public class EventManager implements Listener {
                         // 2) Remove itemstack from user, or reduce amount by 1.
                         if (event.getPlayer().getGameMode() != GameMode.CREATIVE) {
                             if (event.getPlayer().getInventory().getItemInMainHand().getAmount() <= 1) {
-                                event.getPlayer().getInventory().remove(event.getPlayer().getInventory().getItemInMainHand());
+                                event.getPlayer().getInventory().setItemInMainHand(new ItemStack(Material.AIR));
                             } else {
                                 int nextAmount = event.getPlayer().getInventory().getItemInMainHand().getAmount() - 1;
                                 event.getPlayer().getInventory().getItemInMainHand().setAmount(nextAmount);
@@ -245,7 +250,7 @@ public class EventManager implements Listener {
                     // 4) Remove itemstack from user, or reduce amount by 1.
                     if (event.getPlayer().getGameMode() != GameMode.CREATIVE) {
                         if (event.getPlayer().getInventory().getItemInMainHand().getAmount() <= 1) {
-                            event.getPlayer().getInventory().remove(event.getPlayer().getInventory().getItemInMainHand());
+                            event.getPlayer().getInventory().setItemInMainHand(new ItemStack(Material.AIR));
                         } else {
                             int nextAmount = event.getPlayer().getInventory().getItemInMainHand().getAmount() - 1;
                             event.getPlayer().getInventory().getItemInMainHand().setAmount(nextAmount);
