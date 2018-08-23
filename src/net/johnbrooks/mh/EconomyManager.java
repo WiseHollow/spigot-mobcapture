@@ -1,5 +1,6 @@
 package net.johnbrooks.mh;
 
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -29,10 +30,11 @@ public class EconomyManager {
 
     private static boolean chargeItem(Player player)
     {
-        for (ItemStack itemStack : player.getInventory().getContents()) {
+        for (int i = 0; i < player.getInventory().getContents().length; i++) {
+            ItemStack itemStack = player.getInventory().getContents()[i];
             if (itemStack != null && itemStack.getType().name().equalsIgnoreCase(Settings.costMaterial.name()) && itemStack.getAmount() >= Settings.costAmount) {
                 if (itemStack.getAmount() == Settings.costAmount)
-                    player.getInventory().remove(itemStack);
+                    player.getInventory().setItem(i, new ItemStack(Material.AIR));
                 else
                     itemStack.setAmount(itemStack.getAmount() - Settings.costAmount);
                 if (Settings.costAmount > 0) {

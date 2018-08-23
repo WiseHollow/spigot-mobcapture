@@ -188,7 +188,7 @@ public class EventManager implements Listener {
                 }
 
                 if (!event.isCancelled() && event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-                    Location target = event.getClickedBlock().getLocation().clone();
+                    Location target = event.getClickedBlock().getLocation().clone().add(0.5, 0, 0.5);
 
                     if (event.getBlockFace() != BlockFace.UP) {
                         // Make a friendly location to spawn the entity.
