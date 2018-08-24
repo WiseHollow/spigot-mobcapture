@@ -1,9 +1,6 @@
 package net.johnbrooks.mh;
 
-import org.bukkit.entity.Animals;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Monster;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 
 public class PermissionManager {
     public final String NoCost = Main.plugin.getName() + ".NoCost";
@@ -14,7 +11,9 @@ public class PermissionManager {
     public boolean hasPermissionToCapture(Player player, LivingEntity livingEntity) {
         if (livingEntity instanceof Animals && player.hasPermission(CatchPeaceful))
             return true;
-        else if (livingEntity instanceof Monster && player.hasPermission(CatchHostile))
+        else if (livingEntity instanceof WaterMob && player.hasPermission(CatchPeaceful)) {
+            return true;
+        } else if (livingEntity instanceof Monster && player.hasPermission(CatchHostile))
             return true;
         else
             return player.hasPermission(CatchPrefix + livingEntity.getType().name());
