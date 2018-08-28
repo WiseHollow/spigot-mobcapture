@@ -1,5 +1,6 @@
-package net.johnbrooks.mh;
+package net.johnbrooks.mh.managers;
 
+import net.johnbrooks.mh.Main;
 import org.bukkit.entity.*;
 
 public class PermissionManager {

@@ -1,5 +1,8 @@
-package net.johnbrooks.mh;
+package net.johnbrooks.mh.managers;
 
+import net.johnbrooks.mh.Language;
+import net.johnbrooks.mh.Main;
+import net.johnbrooks.mh.Settings;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 

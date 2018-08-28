@@ -1,4 +1,4 @@
-package net.johnbrooks.mh.events;
+package net.johnbrooks.mh.events.custom;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;

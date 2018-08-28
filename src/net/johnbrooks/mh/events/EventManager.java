@@ -1,10 +1,13 @@
 package net.johnbrooks.mh.events;
 
 import net.johnbrooks.mh.*;
+import net.johnbrooks.mh.events.custom.CreatureCaptureEvent;
+import net.johnbrooks.mh.events.custom.CreatureReleaseEvent;
 import net.johnbrooks.mh.items.CaptureEgg;
 
 import java.util.Random;
 
+import net.johnbrooks.mh.managers.EconomyManager;
 import org.bukkit.*;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.*;

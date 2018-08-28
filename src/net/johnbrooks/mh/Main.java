@@ -2,6 +2,7 @@ package net.johnbrooks.mh;
 
 import me.ryanhamshire.GriefPrevention.GriefPrevention;
 import net.johnbrooks.mh.events.EventManager;
+import net.johnbrooks.mh.managers.PermissionManager;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.plugin.java.JavaPlugin;
 
