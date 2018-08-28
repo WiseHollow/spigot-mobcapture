@@ -9,13 +9,14 @@ public class PermissionManager {
     public final String CatchHostile = "MobCapture.Catch.Hostile";
 
     public boolean hasPermissionToCapture(Player player, LivingEntity livingEntity) {
-        if (livingEntity instanceof Animals && player.hasPermission(CatchPeaceful))
+        if (livingEntity instanceof Animals && player.hasPermission(CatchPeaceful)) {
             return true;
-        else if (livingEntity instanceof WaterMob && player.hasPermission(CatchPeaceful)) {
+        } else if (livingEntity instanceof WaterMob && player.hasPermission(CatchPeaceful)) {
             return true;
-        } else if (livingEntity instanceof Monster && player.hasPermission(CatchHostile))
+        } else if (livingEntity instanceof Monster && player.hasPermission(CatchHostile)) {
             return true;
-        else
+        } else {
             return player.hasPermission(CatchPrefix + livingEntity.getType().name());
+        }
     }
 }
