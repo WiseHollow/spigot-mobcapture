@@ -46,28 +46,12 @@ public class EventManager implements Listener {
         //1) If a player is shooting a projectile.
         if (!event.isCancelled() && event.getEntity() != null && event.getEntity().getShooter() != null &&
                 event.getEntity().getShooter() instanceof Player) {
-            Player player = (Player) event.getEntity().getShooter();
-
-            //2) Check which projectile is being launched.
-            ItemStack projectileItemStack = null;
-            if (player.getInventory().getItemInMainHand().getType() == Material.BOW) {
-                int slot = player.getInventory().first(Material.ARROW);
-                if (slot >= 0) {
-                    ItemStack itemStack = player.getInventory().getItem(slot);
-                    if (itemStack != null && itemStack.getType() == Material.ARROW) {
-                        projectileItemStack = itemStack;
-                    }
-                }
-
-            } else {
-                projectileItemStack = player.getInventory().getItemInMainHand();
-            }
-
+            Projectile projectile = event.getEntity();
 
             //3) If its the correct project type, attach required meta data to projectile.
-            if (projectileItemStack != null &&
-                    projectileItemStack.getType().name().equalsIgnoreCase(Settings.projectileCatcherMaterial.name())) {
-                FixedMetadataValue state = new FixedMetadataValue(Main.plugin, projectileItemStack.getType().name());
+            if (projectile != null &&
+                    projectile.getType().name().equalsIgnoreCase(Settings.projectileCatcherMaterial.name())) {
+                FixedMetadataValue state = new FixedMetadataValue(Main.plugin, projectile.getType().name());
                 event.getEntity().setMetadata("type", state);
             }
 
