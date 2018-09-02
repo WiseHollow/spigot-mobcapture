@@ -52,6 +52,9 @@ public class CaptureEgg {
                 case MUSHROOM_COW:
                     material = Material.MOOSHROOM_SPAWN_EGG;
                     break;
+                default:
+                    material = Material.GHAST_SPAWN_EGG;
+                    break;
             }
         }
         ItemStack spawnEgg = new ItemStack(material, 1);
