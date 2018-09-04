@@ -13,3 +13,5 @@ Disabled Worlds: []
 Colored Eggs: true
 # Are you using GriefPrevention?
 GriefPrevention Hook: false
+# Allow capturing creatures with melee
+MeleeCapture: true

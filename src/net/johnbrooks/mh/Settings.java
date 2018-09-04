@@ -25,6 +25,7 @@ public class Settings {
     private static List<String> disabledWorlds = new ArrayList<>();
 
     public static boolean griefPreventionHook = false;
+    public static boolean meleeCapture = true;
 
     public static void load() {
         // 1) Grab configuration for plugin.
@@ -64,6 +65,7 @@ public class Settings {
         disabledWorlds = config.getStringList("Disabled Worlds");
         coloredEggs = config.getBoolean("Colored Eggs");
         griefPreventionHook = config.getBoolean("GriefPrevention Hook");
+        meleeCapture = config.getBoolean("MeleeCapture");
 
         if (griefPreventionHook) {
             Main.griefPrevention = GriefPrevention.instance;

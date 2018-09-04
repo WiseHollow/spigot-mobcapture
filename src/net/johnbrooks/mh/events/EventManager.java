@@ -102,13 +102,6 @@ public class EventManager implements Listener {
     }
 
     @EventHandler
-    public void meleeCaptureEvent(EntityDamageByEntityEvent event) {
-        if (event.getDamager() instanceof Projectile) {
-
-        }
-    }
-
-    @EventHandler
     public void captureEvent(EntityDamageByEntityEvent event) {
 
         Player player = null;
@@ -122,7 +115,7 @@ public class EventManager implements Listener {
                     event.getDamager().getMetadata("type").get(0).asString().equalsIgnoreCase(Settings.projectileCatcherMaterial.name()) &&
                     ((Projectile) event.getDamager()).getShooter() instanceof Player) {
                 player = (Player) ((Projectile) event.getDamager()).getShooter();
-            } else if (event.getDamager() instanceof Player
+            } else if (Settings.meleeCapture && event.getDamager() instanceof Player
                     && ((Player) event.getDamager()).getInventory().getItemInMainHand() != null
                     && ((Player) event.getDamager()).getInventory().getItemInMainHand().getType() == Settings.projectileCatcherMaterial) {
                 player = ((Player) event.getDamager());
