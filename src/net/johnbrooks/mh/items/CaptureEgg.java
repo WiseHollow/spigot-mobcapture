@@ -23,21 +23,6 @@ public class CaptureEgg {
         return NBTManager.spawnEntityFromNBTData(spawnItem, target);
     }
 
-    public static String getCreatureType(ItemStack spawnItem) {
-        if (NBTManager.isSpawnEgg(spawnItem))
-            return spawnItem.getItemMeta().getDisplayName().substring(TITLE_PREFIX.length(), spawnItem.getItemMeta().getDisplayName().length());
-        else
-            return null;
-    }
-
-//    public static boolean isSpawnEgg(ItemStack itemStack) {
-//        if (itemStack != null && itemStack.getType().name().contains("_SPAWN_EGG") && itemStack.hasItemMeta()) {
-//            ItemMeta meta = itemStack.getItemMeta();
-//            return meta.hasDisplayName() && meta.getDisplayName().startsWith(TITLE_PREFIX);
-//        }
-//        return false;
-//    }
-
     private static ItemStack get(LivingEntity livingEntity) {
         return convertEntityToEntitySpawnEgg(livingEntity);
     }
