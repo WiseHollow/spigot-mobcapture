@@ -22,6 +22,22 @@ public class NBTManager {
         END, BYTE, SHORT, INT, LONG, FLOAT, DOUBLE, BYTE_ARRAY, STRING, LIST, COMPOUND, INT_ARRAY;
     }
 
+    public static boolean isSpawnEgg(ItemStack itemStack) {
+        if (itemStack.getType().name().contains("SPAWN_EGG")) {
+            net.minecraft.server.v1_13_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
+            if (nmsStack.hasTag()) {
+                NBTTagCompound compound = nmsStack.getTag();
+                NBTTagCompound entityDetails = compound.getCompound("tag");
+                if (entityDetails != null) {
+                    String entityType = entityDetails.getString("entity type");
+                    return entityType != null;
+                }
+            }
+        }
+
+        return false;
+    }
+
     public static LivingEntity spawnEntityFromNBTData(ItemStack spawnItem, Location target) {
         if (spawnItem != null) {
             net.minecraft.server.v1_13_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(spawnItem);

@@ -161,11 +161,9 @@ public class EventManager implements Listener {
 
     @EventHandler
     public void preventUseEggOnOtherEntity(PlayerInteractEntityEvent event) {
-        if (event.getPlayer().getInventory().getItemInMainHand() != null && event.getHand() == EquipmentSlot.HAND) {
-            String nameOfCreature = CaptureEgg.getCreatureType(event.getPlayer().getInventory().getItemInMainHand());
-            if (nameOfCreature != null) {
-                event.setCancelled(true);
-            }
+        if (event.getPlayer().getInventory().getItemInMainHand() != null && event.getHand() == EquipmentSlot.HAND
+                && NBTManager.isSpawnEgg(event.getPlayer().getInventory().getItemInMainHand())) {
+            event.setCancelled(true);
         }
     }
 
@@ -174,8 +172,7 @@ public class EventManager implements Listener {
         if (event.getPlayer().getInventory().getItemInMainHand() != null &&
                 event.getHand() == EquipmentSlot.HAND) {
 
-            String nameOfCreature = CaptureEgg.getCreatureType(event.getPlayer().getInventory().getItemInMainHand());
-            if (nameOfCreature != null) {
+            if (NBTManager.isSpawnEgg(event.getPlayer().getInventory().getItemInMainHand())) {
                 if (Settings.isDisabledWorld(event.getPlayer().getWorld().getName())) {
                     event.getPlayer().sendMessage(Language.PREFIX + "You cannot release a creature in this world!");
                     return;
@@ -197,9 +194,9 @@ public class EventManager implements Listener {
                         // Release Logic
 
                         // 1) Spawn creature at target location and cancel event.
+                        LivingEntity spawnedEntity = CaptureEgg.useSpawnItem(event.getPlayer().getInventory().getItemInMainHand(), target);
                         event.setCancelled(true);
-                        event.getPlayer().sendMessage(ChatColor.YELLOW + Main.plugin.getName() + ": " + ChatColor.BLUE + nameOfCreature + " successfully spawned!");
-                        CaptureEgg.useSpawnItem(event.getPlayer().getInventory().getItemInMainHand(), target);
+                        event.getPlayer().sendMessage(ChatColor.YELLOW + Main.plugin.getName() + ": " + ChatColor.BLUE + spawnedEntity.getType().name() + " successfully spawned!");
 
                         // 2) Remove itemstack from user, or reduce amount by 1.
                         if (event.getPlayer().getGameMode() != GameMode.CREATIVE) {

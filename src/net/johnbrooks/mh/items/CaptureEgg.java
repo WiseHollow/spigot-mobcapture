@@ -19,24 +19,24 @@ public class CaptureEgg {
         drop.setVelocity(new Vector(0, 0.3f, 0));
     }
 
-    public static void useSpawnItem(ItemStack spawnItem, Location target) {
-        NBTManager.spawnEntityFromNBTData(spawnItem, target);
+    public static LivingEntity useSpawnItem(ItemStack spawnItem, Location target) {
+        return NBTManager.spawnEntityFromNBTData(spawnItem, target);
     }
 
     public static String getCreatureType(ItemStack spawnItem) {
-        if (isSpawnEgg(spawnItem))
+        if (NBTManager.isSpawnEgg(spawnItem))
             return spawnItem.getItemMeta().getDisplayName().substring(TITLE_PREFIX.length(), spawnItem.getItemMeta().getDisplayName().length());
         else
             return null;
     }
 
-    public static boolean isSpawnEgg(ItemStack itemStack) {
-        if (itemStack != null && itemStack.getType().name().contains("_SPAWN_EGG") && itemStack.hasItemMeta()) {
-            ItemMeta meta = itemStack.getItemMeta();
-            return meta.hasDisplayName() && meta.getDisplayName().startsWith(TITLE_PREFIX);
-        }
-        return false;
-    }
+//    public static boolean isSpawnEgg(ItemStack itemStack) {
+//        if (itemStack != null && itemStack.getType().name().contains("_SPAWN_EGG") && itemStack.hasItemMeta()) {
+//            ItemMeta meta = itemStack.getItemMeta();
+//            return meta.hasDisplayName() && meta.getDisplayName().startsWith(TITLE_PREFIX);
+//        }
+//        return false;
+//    }
 
     private static ItemStack get(LivingEntity livingEntity) {
         return convertEntityToEntitySpawnEgg(livingEntity);
