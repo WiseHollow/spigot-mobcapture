@@ -102,61 +102,82 @@ public class EventManager implements Listener {
     }
 
     @EventHandler
-    public void captureEvent(EntityDamageByEntityEvent event) {
-        //1) Check for all capture initial requirements.
-        if (event.getDamager() instanceof Projectile && event.getDamager().hasMetadata("type") &&
-                event.getDamager().getMetadata("type").get(0).asString().equalsIgnoreCase(Settings.projectileCatcherMaterial.name()) &&
-                event.getEntity() instanceof LivingEntity &&
-                !(event.getEntity() instanceof Player) &&
-                ((Projectile) event.getDamager()).getShooter() instanceof Player) {
-
-            //2) Check for whether the player has the correct payment to catch.
-            Player player = (Player) ((Projectile) event.getDamager()).getShooter();
-            LivingEntity livingEntity = (LivingEntity) event.getEntity();
-
-            //3) Check if the player has permission to capture creatures.
-            if (!Main.permissionManager.hasPermissionToCapture(player, livingEntity)) {
-                player.sendMessage(Language.PREFIX + "You do not have permission to capture this creature.");
-                return;
-            }
-
-            if (Settings.griefPreventionHook &&
-                    Main.griefPrevention.claimsEnabledForWorld(event.getEntity().getWorld()) &&
-                    Main.griefPrevention.allowBuild(player, event.getEntity().getLocation()) != null) {
-                player.sendMessage(Language.PREFIX + "You do not have permission to capture creatures here.");
-                return;
-            }
-
-            //4) Check if this is a disabled world.
-            if (Settings.isDisabledWorld(player.getWorld().getName())) {
-                player.sendMessage(Language.PREFIX + "You cannot capture a creature in this world!");
-                return;
-            }
-
-            //5) Check if they have enough money/items.
-            if (!player.hasPermission(Main.permissionManager.NoCost) && Settings.costMode != Settings.CostMode.NONE) {
-                if (!EconomyManager.chargePlayer(player)) {
-                    player.sendMessage(Language.PREFIX + "You do not have enough " +
-                            (Settings.costMode == Settings.CostMode.ITEM ?
-                                    Settings.costMaterial.name() :
-                                    "money (" + Settings.costVault + " required)."));
-                    return;
-                }
-            }
-
-            //6) Setup capture event and run it.
-            CreatureCaptureEvent creatureCaptureEvent = new CreatureCaptureEvent(player, livingEntity);
-            callEvent(creatureCaptureEvent);
-            if (!creatureCaptureEvent.isCancelled()) {
-                //7) Remove the damage from the entity so we don't kill it.
-                event.setDamage(0.0d);
-
-                //8) Capture Logic
-                CaptureEgg.captureLivingEntity(creatureCaptureEvent.getTargetEntity());
-                livingEntity.remove();
-            }
+    public void meleeCaptureEvent(EntityDamageByEntityEvent event) {
+        if (event.getDamager() instanceof Projectile) {
 
         }
+    }
+
+    @EventHandler
+    public void captureEvent(EntityDamageByEntityEvent event) {
+
+        Player player = null;
+        LivingEntity livingEntity = null;
+
+        //1) Check for all capture initial requirements.
+        if (event.getEntity() instanceof LivingEntity && !(event.getEntity() instanceof Player)) {
+            livingEntity = (LivingEntity) event.getEntity();
+            // Check item used requirements (projectile or melee).
+            if (event.getDamager() instanceof Projectile && event.getDamager().hasMetadata("type") &&
+                    event.getDamager().getMetadata("type").get(0).asString().equalsIgnoreCase(Settings.projectileCatcherMaterial.name()) &&
+                    ((Projectile) event.getDamager()).getShooter() instanceof Player) {
+                player = (Player) ((Projectile) event.getDamager()).getShooter();
+            } else if (event.getDamager() instanceof Player
+                    && ((Player) event.getDamager()).getInventory().getItemInMainHand() != null
+                    && ((Player) event.getDamager()).getInventory().getItemInMainHand().getType() == Settings.projectileCatcherMaterial) {
+                player = ((Player) event.getDamager());
+            }
+        }
+
+        if (player != null) {
+            boolean success = attemptCapture(player, livingEntity);
+            if (success) {
+                event.setDamage(0);
+            }
+        }
+    }
+
+    private boolean attemptCapture(Player catcher, LivingEntity target) {
+        if (!Main.permissionManager.hasPermissionToCapture(catcher, target)) {
+            catcher.sendMessage(Language.PREFIX + "You do not have permission to capture this creature.");
+            return false;
+        }
+
+        if (Settings.griefPreventionHook &&
+                Main.griefPrevention.claimsEnabledForWorld(target.getWorld()) &&
+                Main.griefPrevention.allowBuild(catcher, target.getLocation()) != null) {
+            catcher.sendMessage(Language.PREFIX + "You do not have permission to capture creatures here.");
+            return false;
+        }
+
+        //4) Check if this is a disabled world.
+        if (Settings.isDisabledWorld(catcher.getWorld().getName())) {
+            catcher.sendMessage(Language.PREFIX + "You cannot capture a creature in this world!");
+            return false;
+        }
+
+        //5) Check if they have enough money/items.
+        if (!catcher.hasPermission(Main.permissionManager.NoCost) && Settings.costMode != Settings.CostMode.NONE) {
+            if (!EconomyManager.chargePlayer(catcher)) {
+                catcher.sendMessage(Language.PREFIX + "You do not have enough " +
+                        (Settings.costMode == Settings.CostMode.ITEM ?
+                                Settings.costMaterial.name() :
+                                "money (" + Settings.costVault + " required)."));
+                return false;
+            }
+        }
+
+        //6) Setup capture event and run it.
+        CreatureCaptureEvent creatureCaptureEvent = new CreatureCaptureEvent(catcher, target);
+        callEvent(creatureCaptureEvent);
+        if (!creatureCaptureEvent.isCancelled()) {
+            //8) Capture Logic
+            CaptureEgg.captureLivingEntity(creatureCaptureEvent.getTargetEntity());
+            target.remove();
+            return true;
+        }
+
+        return false;
     }
 
     @EventHandler
