@@ -210,9 +210,11 @@ public class EventManager implements Listener {
                     Vector direction = event.getPlayer().getLocation().getDirection().clone().normalize();
 
                     //2) Spawn item-drop.
+                    ItemStack toThrow = event.getPlayer().getInventory().getItemInMainHand().clone();
+                    toThrow.setAmount(1);
                     final Item item = event.getPlayer().getWorld().dropItem(
                             event.getPlayer().getLocation().clone().add(0, 1, 0),
-                            event.getPlayer().getInventory().getItemInMainHand());
+                            toThrow);
 
                     //3) Prevent pickup, set direction, set velocity
                     item.setPickupDelay(Integer.MAX_VALUE);
