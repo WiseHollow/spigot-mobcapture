@@ -227,9 +227,11 @@ public class EventManager implements Listener {
                     Vector direction = event.getPlayer().getLocation().getDirection().clone().normalize();
 
                     //2) Spawn item-drop.
+                    ItemStack toThrow = event.getPlayer().getInventory().getItemInMainHand().clone();
+                    toThrow.setAmount(1);
                     final Item item = event.getPlayer().getWorld().dropItem(
                             event.getPlayer().getLocation().clone().add(0, 1, 0),
-                            event.getPlayer().getInventory().getItemInMainHand());
+                            toThrow);
 
                     //3) Prevent pickup, set direction, set velocity
                     item.setPickupDelay(Integer.MAX_VALUE);
@@ -237,12 +239,14 @@ public class EventManager implements Listener {
                     item.setVelocity(direction.clone().multiply(1.5f));
 
                     Main.plugin.getServer().getScheduler().runTaskLater(Main.plugin, () -> {
-                        Location fixedLocation = new Location(item.getLocation().getWorld(),
-                                item.getLocation().getBlockX() + 0.5f,
-                                item.getLocation().getBlockY() + 0.5f,
-                                item.getLocation().getBlockZ() + 0.5f);
-                        CaptureEgg.useSpawnItem(item.getItemStack(), fixedLocation);
-                        item.remove();
+                        if (!item.isDead()) {
+                            Location fixedLocation = new Location(item.getLocation().getWorld(),
+                                    item.getLocation().getBlockX() + 0.5f,
+                                    item.getLocation().getBlockY() + 0.5f,
+                                    item.getLocation().getBlockZ() + 0.5f);
+                            CaptureEgg.useSpawnItem(item.getItemStack(), fixedLocation);
+                            item.remove();
+                        }
                     }, 60);
 
                     // 4) Remove itemstack from user, or reduce amount by 1.
