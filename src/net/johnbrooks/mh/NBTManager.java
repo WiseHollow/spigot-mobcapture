@@ -109,9 +109,14 @@ public class NBTManager {
             Tameable tameable = (Tameable) livingEntity;
             tameable.setTamed(entityDetails.getBoolean("tamed"));
             if (tameable.isTamed()) {
-                OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(UUID.fromString(entityDetails.getString("owner")));
-                if (offlinePlayer != null)
-                    tameable.setOwner(offlinePlayer);
+                try{
+                    UUID ownerUUID = UUID.fromString(entityDetails.getString("owner"));
+                    OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(ownerUUID);
+                    if (offlinePlayer != null)
+                        tameable.setOwner(offlinePlayer);
+                } catch (IllegalArgumentException ignored){
+
+                }
             }
         }
 
