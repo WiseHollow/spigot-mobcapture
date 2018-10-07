@@ -1,5 +1,5 @@
 name: MobCapture
-version: 1.2.5
+version: 1.2.6
 author: WiseHollow
 main: net.johnbrooks.mh.Main
 api-version: 1.13
@@ -26,6 +26,6 @@ permissions:
 commands:
   MobCapture:
     description: Performs administrative tasks regarding MobCapture.
-    usage: /<command> reload|update|version
+    usage: /<command> reload|update|version|spawn
     permission: MobCapture.admin
     permission-message: You don't have <permission>
