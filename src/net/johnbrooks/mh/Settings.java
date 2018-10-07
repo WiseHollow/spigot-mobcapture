@@ -1,6 +1,7 @@
 package net.johnbrooks.mh;
 
 import me.ryanhamshire.GriefPrevention.GriefPrevention;
+import net.johnbrooks.mh.items.UniqueProjectileData;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -71,6 +72,12 @@ public class Settings {
             Main.griefPrevention = GriefPrevention.instance;
             Main.logger.info("GriefPrevention hook " + (Main.griefPrevention != null
                     ? "was successful!" : "has failed!"));
+        }
+
+        UniqueProjectileData.setEnabled(config.getBoolean("Require Unique"));
+        if (UniqueProjectileData.isEnabled()) {
+            UniqueProjectileData.setDisplayName(config.getString("Unique Display Name"));
+            UniqueProjectileData.setLore(config.getStringList("Unique Lore"));
         }
     }
 

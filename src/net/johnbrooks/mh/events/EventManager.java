@@ -7,6 +7,7 @@ import net.johnbrooks.mh.items.CaptureEgg;
 
 import java.util.Random;
 
+import net.johnbrooks.mh.items.UniqueProjectileData;
 import net.johnbrooks.mh.managers.EconomyManager;
 import org.bukkit.*;
 import org.bukkit.block.BlockFace;
@@ -52,12 +53,19 @@ public class EventManager implements Listener {
             Projectile projectile = event.getEntity();
 
             //3) If its the correct project type, attach required meta data to projectile.
-            if (projectile != null &&
-                    projectile.getType().name().equalsIgnoreCase(Settings.projectileCatcherMaterial.name())) {
-                FixedMetadataValue state = new FixedMetadataValue(Main.plugin, projectile.getType().name());
-                event.getEntity().setMetadata("type", state);
+            if (projectile != null && projectile.getType().name().equalsIgnoreCase(Settings.projectileCatcherMaterial.name())) {
+                if (UniqueProjectileData.isEnabled()) {
+                    int indexOfProjectile = ((Player) projectile.getShooter()).getInventory().first(Settings.projectileCatcherMaterial);
+                    ItemStack shot = ((Player) projectile.getShooter()).getInventory().getItem(indexOfProjectile);
+                    if (UniqueProjectileData.isProjectile(shot)) {
+                        FixedMetadataValue state = new FixedMetadataValue(Main.plugin, projectile.getType().name());
+                        event.getEntity().setMetadata("type", state);
+                    }
+                } else {
+                    FixedMetadataValue state = new FixedMetadataValue(Main.plugin, projectile.getType().name());
+                    event.getEntity().setMetadata("type", state);
+                }
             }
-
         }
     }
 
