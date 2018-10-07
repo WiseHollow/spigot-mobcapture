@@ -1,5 +1,6 @@
 package net.johnbrooks.mh;
 
+import net.johnbrooks.mh.items.UniqueProjectileData;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.ChatColor;
@@ -66,6 +67,14 @@ public class Commands implements CommandExecutor {
                 Main.plugin.reloadConfig();
                 Settings.load();
                 sender.sendMessage(Language.PREFIX + "Configuration has been regenerated and reloaded!");
+                return true;
+            } else if (args[0].equalsIgnoreCase("spawn")) {
+                if (!UniqueProjectileData.isEnabled()) {
+                    sender.sendMessage("Unique Projectiles are not enabled in the config.");
+                } else if (sender instanceof Player) {
+                    ((Player) sender).getInventory().addItem(UniqueProjectileData.spawn());
+                    sender.sendMessage("Spawned Unique Projectile.");
+                }
                 return true;
             }
         }
