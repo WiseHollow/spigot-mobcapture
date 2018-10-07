@@ -1,6 +1,7 @@
 package net.johnbrooks.mh;
 
 import me.ryanhamshire.GriefPrevention.GriefPrevention;
+import net.johnbrooks.mh.commands.CommandMobCapture;
 import net.johnbrooks.mh.events.EventManager;
 import net.johnbrooks.mh.managers.PermissionManager;
 import net.milkbowl.vault.economy.Economy;
@@ -22,7 +23,7 @@ public class Main extends JavaPlugin {
     public void onEnable() {
         plugin = this;
         saveDefaultConfig();
-        getCommand("MobCapture").setExecutor(new Commands());
+        getCommand("MobCapture").setExecutor(new CommandMobCapture());
         logger = getLogger();
         permissionManager = new PermissionManager();
         eventManager = new EventManager();
