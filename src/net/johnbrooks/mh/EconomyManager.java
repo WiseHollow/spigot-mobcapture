@@ -6,42 +6,69 @@ import org.bukkit.inventory.ItemStack;
 
 public class EconomyManager {
 
-    public static boolean chargePlayer(Player player) {
+    public static void chargePlayer(Player player) {
         switch (Settings.costMode) {
             case ITEM:
-                return chargeItem(player);
+                chargeItem(player);
+                String capitalizedMaterial = Settings.costMaterial.name().substring(0, 1) + Settings.costMaterial.name().substring(1).toLowerCase().replace("_", " ");
+                player.sendMessage(Language.PREFIX + "[" + capitalizedMaterial + " Charged: " + Settings.costAmount + "]");
+                break;
             case VAULT:
-                return chargeVault(player);
+                chargeVault(player);
+                break;
+            default:
+            	break;
+        }
+        
+    }
+    public static boolean canChargePlayer(Player player) {
+        switch (Settings.costMode) {
+            case ITEM:
+                return canChargeItem(player);
+            case VAULT:
+                return canChargeVault(player);
             default:
                 return false;
         }
     }
 
-    private static boolean chargeVault(Player player) {
-        if (Main.economy.getBalance(player) >= Settings.costVault) {
-            if (Settings.costVault > 0) {
-                player.sendMessage(Language.PREFIX + "[Wallet Charged: $" + Settings.costVault + "]");
-                Main.economy.withdrawPlayer(player, Settings.costVault);
-            }
-            return true;
-        }
-        return false;
+    private static void chargeVault(Player player) {
+    	player.sendMessage(Language.PREFIX + "[Wallet Charged: $" + Settings.costVault + "]");
+    	Main.economy.withdrawPlayer(player, Settings.costVault);
+    }
+    private static boolean canChargeVault(Player player) {
+        return (Main.economy.getBalance(player) >= Settings.costVault && Settings.costVault > 0);
     }
 
-    private static boolean chargeItem(Player player)
-    {
+    private static void chargeItem(Player player) {
+    	int req = Settings.costAmount;
         for (int i = 0; i < player.getInventory().getContents().length; i++) {
             ItemStack itemStack = player.getInventory().getContents()[i];
-            if (itemStack != null && itemStack.getType().name().equalsIgnoreCase(Settings.costMaterial.name()) && itemStack.getAmount() >= Settings.costAmount) {
-                if (itemStack.getAmount() == Settings.costAmount)
-                    player.getInventory().setItem(i, new ItemStack(Material.AIR));
-                else
-                    itemStack.setAmount(itemStack.getAmount() - Settings.costAmount);
-                if (Settings.costAmount > 0) {
-                    String capitalizedMaterial = Settings.costMaterial.name().substring(0, 1) + Settings.costMaterial.name().substring(1).toLowerCase().replace("_", " ");
-                    player.sendMessage(Language.PREFIX + "[" + capitalizedMaterial + " Charged: " + Settings.costAmount + "]");
+            if (itemStack != null && itemStack.getType().name().equalsIgnoreCase(Settings.costMaterial.name())) {
+            	int current = itemStack.getAmount();
+                if (current == req) {
+                	player.getInventory().setItem(i, new ItemStack(Material.AIR));
+                	return;
                 }
-                return true;
+                if (current > req) {
+                	itemStack.setAmount(current - req);
+                	return;
+                }
+                if (current < req) {
+                	player.getInventory().setItem(i, new ItemStack(Material.AIR));
+                	req -= current;
+                }
+            }
+        }
+    }
+    private static boolean canChargeItem(Player player) {
+    	int count = 0;
+        for (int i = 0; i < player.getInventory().getContents().length; i++) {
+            ItemStack itemStack = player.getInventory().getContents()[i];
+            if (itemStack != null && itemStack.getType().name().equalsIgnoreCase(Settings.costMaterial.name())) {
+                count +=itemStack.getAmount();
+                if (count >= Settings.costAmount)
+                	return true;
             }
         }
         return false;
