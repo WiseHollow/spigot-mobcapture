@@ -16,6 +16,10 @@ public class EconomyManager {
             case VAULT:
                 chargeVault(player);
                 break;
+            case BOTH:
+                chargeItem(player);
+                chargeVault(player);
+                break;
             default:
             	break;
         }
@@ -27,6 +31,8 @@ public class EconomyManager {
                 return canChargeItem(player);
             case VAULT:
                 return canChargeVault(player);
+            case BOTH:
+                return canChargeItem(player) && canChargeVault(player);
             default:
                 return false;
         }
