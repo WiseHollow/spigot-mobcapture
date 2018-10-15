@@ -150,7 +150,8 @@ public class EventManager implements Listener {
 
             //5) Check if they have enough money/items.
             if (!player.hasPermission(Main.permissionManager.NoCost) && Settings.costMode != Settings.CostMode.NONE) {
-                if (!EconomyManager.chargePlayer(player))
+            	//EchoEdit - Split accessors and mutators
+                if (!EconomyManager.canChargePlayer(player))
                 {
                     player.sendMessage(Language.PREFIX + "You do not have enough " +
                             (Settings.costMode == Settings.CostMode.ITEM ?
@@ -164,6 +165,8 @@ public class EventManager implements Listener {
             CreatureCaptureEvent creatureCaptureEvent = new CreatureCaptureEvent(player, livingEntity);
             callEvent(creatureCaptureEvent);
             if (!creatureCaptureEvent.isCancelled()) {
+            	//EchoEdit - We now charge players
+            	EconomyManager.chargePlayer(player);
                 //7) Remove the damage from the entity so we don't kill it.
                 event.setDamage(0.0d);
 
@@ -233,14 +236,17 @@ public class EventManager implements Listener {
                     item.getLocation().setDirection(direction);
                     item.setVelocity(direction.clone().multiply(1.5f));
 
-                    Main.plugin.getServer().getScheduler().runTaskLater(Main.plugin, () -> {
-                        Location fixedLocation = new Location(item.getLocation().getWorld(),
-                                item.getLocation().getBlockX() + 0.5f,
-                                item.getLocation().getBlockY() + 0.5f,
-                                item.getLocation().getBlockZ() + 0.5f);
-                        CaptureEgg.useSpawnItem(item.getItemStack(), fixedLocation);
-                        item.remove();
-                    }, 60);
+                    Main.plugin.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
+						@Override
+						public void run() {
+						    Location fixedLocation = new Location(item.getLocation().getWorld(),
+						            item.getLocation().getBlockX() + 0.5f,
+						            item.getLocation().getBlockY() + 0.5f,
+						            item.getLocation().getBlockZ() + 0.5f);
+						    CaptureEgg.useSpawnItem(item.getItemStack(), fixedLocation);
+						    item.remove();
+						}
+					}, 60);
 
                     // 4) Remove itemstack from user, or reduce amount by 1.
                     if (event.getPlayer().getGameMode() != GameMode.CREATIVE) {
