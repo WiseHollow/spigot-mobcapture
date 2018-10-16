@@ -5,6 +5,7 @@ import net.johnbrooks.mh.items.CaptureEgg;
 
 import java.util.Random;
 
+import net.johnbrooks.mh.items.UniqueProjectileData;
 import org.bukkit.*;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.*;
@@ -47,77 +48,69 @@ public class EventManager implements Listener {
         //
 
         //1) If a player is shooting a projectile.
-        if (!event.isCancelled() && event.getEntity().getShooter() != null && event.getEntity().getShooter() instanceof Player) {
-            Player player = (Player) event.getEntity().getShooter();
-
-            //2) Check which projectile is being launched.
-            ItemStack projectileItemStack = null;
-            if (player.getInventory().getItemInMainHand().getType() == Material.BOW) {
-                for (ItemStack itemStack : player.getInventory().getContents()) {
-                    if (itemStack != null && itemStack.getType() == Material.ARROW) {
-                        projectileItemStack = itemStack;
-                        break;
-                    }
-                }
-            } else {
-                projectileItemStack = player.getInventory().getItemInMainHand();
-            }
-
+        if (!event.isCancelled() && event.getEntity() != null && event.getEntity().getShooter() != null &&
+                event.getEntity().getShooter() instanceof Player) {
+            Projectile projectile = event.getEntity();
 
             //3) If its the correct project type, attach required meta data to projectile.
-            if (projectileItemStack != null &&
-                    projectileItemStack.getType().name().equalsIgnoreCase(Settings.projectileCatcherMaterial.name()))
-            {
-                FixedMetadataValue state = new FixedMetadataValue(Main.plugin, projectileItemStack.getType().name());
-                event.getEntity().setMetadata("type", state);
+            if (projectile != null && projectile.getType().name().equalsIgnoreCase(Settings.projectileCatcherMaterial.name())) {
+                if (UniqueProjectileData.isEnabled()) {
+                    int indexOfProjectile = ((Player) projectile.getShooter()).getInventory().first(Settings.projectileCatcherMaterial);
+                    ItemStack shot = ((Player) projectile.getShooter()).getInventory().getItem(indexOfProjectile);
+                    if (UniqueProjectileData.isProjectile(shot)) {
+                        FixedMetadataValue state = new FixedMetadataValue(Main.plugin, projectile.getType().name());
+                        event.getEntity().setMetadata("type", state);
+                    }
+                } else {
+                    FixedMetadataValue state = new FixedMetadataValue(Main.plugin, projectile.getType().name());
+                    event.getEntity().setMetadata("type", state);
+                }
             }
-
         }
     }
-    
+
     @EventHandler
     public void onChickenSpawn(ProjectileHitEvent event) {
-    	//1) Check whether the projectile is an egg
-    	if (event.getEntity() instanceof Egg) {
-    		//2) If it meets the criteria to capture
-    		if (event.getEntity().hasMetadata("type") &&
-    			event.getEntity().getMetadata("type").get(0).asString().equalsIgnoreCase(Settings.projectileCatcherMaterial.name()) &&
-    			event.getHitEntity() != null) {
-    			//3) Do nothing
-    			return;
-    		} else {
-    			//4) Manually spawn the chick
-    			Random random = new Random(System.currentTimeMillis());
-    			if (random.nextInt(8) == 0) {
-    				//5) Spawn a chicken
-    				Chicken chicken = (Chicken) event.getEntity().getWorld().spawnEntity(event.getEntity().getLocation(), EntityType.CHICKEN);
-    				chicken.setBaby();
-    				if (random.nextInt(32) == 0) {
-    					//6) Make it 4
-    					Chicken chicken2 = (Chicken) event.getEntity().getWorld().spawnEntity(event.getEntity().getLocation(), EntityType.CHICKEN);
-        				chicken2.setBaby();
-        				Chicken chicken3 = (Chicken) event.getEntity().getWorld().spawnEntity(event.getEntity().getLocation(), EntityType.CHICKEN);
-        				chicken3.setBaby();
-        				Chicken chicken4 = (Chicken) event.getEntity().getWorld().spawnEntity(event.getEntity().getLocation(), EntityType.CHICKEN);
-        				chicken4.setBaby();
-    				}
-    			}
-    		}
-    	}
-    }
-    
-    @EventHandler
-    public void onVanillaChickenSpawn(CreatureSpawnEvent event) {
-    	//1) Check whether we are spawning a chicken from an egg
-    	if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.EGG && event.getEntityType() == EntityType.CHICKEN) {
-    		//2) Automatically cancel the event so we can manually trigger it above
-    		event.setCancelled(true);
-    	}
+        //1) Check whether the projectile is an egg
+        if (event.getEntity() instanceof Egg) {
+            //2) If it meets the criteria to capture
+            if (event.getEntity().hasMetadata("type") &&
+                    event.getEntity().getMetadata("type").get(0).asString().equalsIgnoreCase(Settings.projectileCatcherMaterial.name()) &&
+                    event.getHitEntity() != null) {
+                //3) Do nothing
+                return;
+            } else {
+                //4) Manually spawn the chick
+                Random random = new Random(System.currentTimeMillis());
+                if (random.nextInt(8) == 0) {
+                    //5) Spawn a chicken
+                    Chicken chicken = (Chicken) event.getEntity().getWorld().spawnEntity(event.getEntity().getLocation(), EntityType.CHICKEN);
+                    chicken.setBaby();
+                    if (random.nextInt(32) == 0) {
+                        //6) Make it 4
+                        Chicken chicken2 = (Chicken) event.getEntity().getWorld().spawnEntity(event.getEntity().getLocation(), EntityType.CHICKEN);
+                        chicken2.setBaby();
+                        Chicken chicken3 = (Chicken) event.getEntity().getWorld().spawnEntity(event.getEntity().getLocation(), EntityType.CHICKEN);
+                        chicken3.setBaby();
+                        Chicken chicken4 = (Chicken) event.getEntity().getWorld().spawnEntity(event.getEntity().getLocation(), EntityType.CHICKEN);
+                        chicken4.setBaby();
+                    }
+                }
+            }
+        }
     }
 
     @EventHandler
-    public void captureEvent(EntityDamageByEntityEvent event)
-    {
+    public void onVanillaChickenSpawn(CreatureSpawnEvent event) {
+        //1) Check whether we are spawning a chicken from an egg
+        if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.EGG && event.getEntityType() == EntityType.CHICKEN) {
+            //2) Automatically cancel the event so we can manually trigger it above
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void captureEvent(EntityDamageByEntityEvent event) {
         //1) Check for all capture initial requirements.
         if (event.getDamager() instanceof Projectile && event.getDamager().hasMetadata("type") &&
                 event.getDamager().getMetadata("type").get(0).asString().equalsIgnoreCase(Settings.projectileCatcherMaterial.name()) &&
@@ -150,7 +143,6 @@ public class EventManager implements Listener {
 
             //5) Check if they have enough money/items.
             if (!player.hasPermission(Main.permissionManager.NoCost) && Settings.costMode != Settings.CostMode.NONE) {
-            	//EchoEdit - Split accessors and mutators
                 if (!EconomyManager.canChargePlayer(player))
                 {
                     player.sendMessage(Language.PREFIX + "You do not have enough " +
@@ -178,8 +170,7 @@ public class EventManager implements Listener {
     }
 
     @EventHandler
-    public void useSpawnEgg(PlayerInteractEvent event)
-    {
+    public void useSpawnEgg(PlayerInteractEvent event) {
         if (event.getPlayer().getInventory().getItemInMainHand() != null &&
                 event.getHand() == EquipmentSlot.HAND) {
 
@@ -214,22 +205,22 @@ public class EventManager implements Listener {
                         if (event.getPlayer().getGameMode() != GameMode.CREATIVE) {
                             if (event.getPlayer().getInventory().getItemInMainHand().getAmount() <= 1) {
                                 event.getPlayer().getInventory().remove(event.getPlayer().getInventory().getItemInMainHand());
-                            }
-                            else {
+                            } else {
                                 int nextAmount = event.getPlayer().getInventory().getItemInMainHand().getAmount() - 1;
                                 event.getPlayer().getInventory().getItemInMainHand().setAmount(nextAmount);
                             }
                         }
                     }
-                }
-                else if (event.getAction() == Action.RIGHT_CLICK_AIR) {
+                } else if (event.getAction() == Action.RIGHT_CLICK_AIR) {
                     //1) Let's prepare to throw the egg. Here we have the unit vector.
                     Vector direction = event.getPlayer().getLocation().getDirection().clone().normalize();
 
                     //2) Spawn item-drop.
+                    ItemStack toThrow = event.getPlayer().getInventory().getItemInMainHand().clone();
+                    toThrow.setAmount(1);
                     final Item item = event.getPlayer().getWorld().dropItem(
                             event.getPlayer().getLocation().clone().add(0, 1, 0),
-                            event.getPlayer().getInventory().getItemInMainHand());
+                            toThrow);
 
                     //3) Prevent pickup, set direction, set velocity
                     item.setPickupDelay(Integer.MAX_VALUE);
