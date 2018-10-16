@@ -15,9 +15,3 @@ Colored Eggs: true
 Towny Hook: false
 # Should we hook into GriefPrevention
 GriefPrevention Hook: false
-# Require projectile to contain key metadata.
-Require Unique: false
-# With '/mobcapture spawn', a projectile will be spawned with these values (only with Require Unique enabled).
-Unique Display Name: '&6Mob Catcher'
-Unique Lore:
-  - '&3Shoot a mob with me!'
