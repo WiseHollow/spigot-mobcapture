@@ -33,5 +33,4 @@ public class TownyCaptureEvents implements Listener {
             }
         }
     }
-
 }
