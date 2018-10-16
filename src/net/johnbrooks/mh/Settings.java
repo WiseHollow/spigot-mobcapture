@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Settings {
-    public enum CostMode { NONE, VAULT, ITEM }
+    public enum CostMode { NONE, VAULT, ITEM, BOTH }
 
     public static CostMode costMode = CostMode.ITEM;
 
@@ -22,7 +22,7 @@ public class Settings {
 
     public static boolean coloredEggs = true;
 
-    private static List<String> disabledWorlds = new ArrayList<>();
+    private static List<String> disabledWorlds = new ArrayList();
 
     public static boolean townyHook = false;
     public static boolean griefPreventionHook = false;
@@ -44,14 +44,13 @@ public class Settings {
         {
             costMode = CostMode.valueOf(config.getString("Cost Mode"));
         } catch(Exception ex) {
-            Main.logger.severe("Invalid Cost Mode! Use either 'NONE', 'VAULT', or 'ITEM'.");
+            Main.logger.severe("Invalid Cost Mode! Use either 'NONE', 'VAULT', 'ITEM', or 'BOTH'.");
         }
 
         // 3) If vault is set, hook into vault.
-        if (costMode == CostMode.VAULT) {
+        if (costMode == CostMode.VAULT || costMode == CostMode.BOTH) {
             Main.logger.info("Vault hook " + (setupEconomy() ? "was successful!" : "has failed!"));
-            if (Main.economy == null)
-            {
+            if (Main.economy == null) {
                 Main.logger.warning("Reverting cost mode to ITEM.");
                 costMode = CostMode.ITEM;
             }
