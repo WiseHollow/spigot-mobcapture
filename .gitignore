@@ -2,3 +2,7 @@
 /.idea
 /*.iml
 /src/META-INF
+/bin/
+.classpath
+.project
+*.prefs
