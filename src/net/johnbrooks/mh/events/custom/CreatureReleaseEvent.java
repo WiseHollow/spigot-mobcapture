@@ -1,4 +1,4 @@
-package net.johnbrooks.mh.events;
+package net.johnbrooks.mh.events.custom;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -21,6 +21,10 @@ public class CreatureReleaseEvent extends Event implements Cancellable {
 
     public Player getUser() {
         return user;
+    }
+
+    public Location getTarget() {
+        return target;
     }
 
     @Override

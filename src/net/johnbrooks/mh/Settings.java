@@ -1,6 +1,7 @@
 package net.johnbrooks.mh;
 
 import me.ryanhamshire.GriefPrevention.GriefPrevention;
+import net.johnbrooks.mh.items.UniqueProjectileData;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -14,7 +15,7 @@ public class Settings {
 
     public static CostMode costMode = CostMode.ITEM;
 
-    public static Material projectileCatcherMaterial = Material.SNOW_BALL;
+    public static Material projectileCatcherMaterial = Material.SNOWBALL;
 
     public static Material costMaterial = Material.REDSTONE;
     public static int costAmount = 1;
@@ -26,6 +27,7 @@ public class Settings {
 
     public static boolean townyHook = false;
     public static boolean griefPreventionHook = false;
+    public static boolean meleeCapture = true;
 
     public static void load() {
         // 1) Grab configuration for plugin.
@@ -66,6 +68,7 @@ public class Settings {
         coloredEggs = config.getBoolean("Colored Eggs");
         townyHook = config.getBoolean("Towny Hook");
         griefPreventionHook = config.getBoolean("GriefPrevention Hook");
+        meleeCapture = config.getBoolean("MeleeCapture");
 
         if (townyHook) {
             Main.logger.info("Towny hook: enabled");
@@ -74,6 +77,12 @@ public class Settings {
             Main.griefPrevention = GriefPrevention.instance;
             Main.logger.info("GriefPrevention hook " + (Main.griefPrevention != null
                     ? "was successful!" : "has failed!"));
+        }
+
+        UniqueProjectileData.setEnabled(config.getBoolean("Require Unique"));
+        if (UniqueProjectileData.isEnabled()) {
+            UniqueProjectileData.setDisplayName(config.getString("Unique Display Name"));
+            UniqueProjectileData.setLore(config.getStringList("Unique Lore"));
         }
     }
 

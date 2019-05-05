@@ -13,5 +13,13 @@ Disabled Worlds: []
 Colored Eggs: true
 # Should we hook into Towny
 Towny Hook: false
-# Should we hook into GriefPrevention
+# Are you using GriefPrevention?
 GriefPrevention Hook: false
+# Allow capturing creatures with melee
+MeleeCapture: true
+# Require projectile to contain key metadata.
+Require Unique: false
+# With '/mobcapture spawn', a projectile will be spawned with these values (only with Require Unique enabled).
+Unique Display Name: '&6Mob Catcher'
+Unique Lore:
+  - '&3Shoot a mob with me!'

@@ -1,4 +1,6 @@
-package net.johnbrooks.mh;
+package net.johnbrooks.mh.managers;
+
+import net.johnbrooks.mh.Main;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,7 +11,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class UpdateManager {
-    private static final String urlToMobCapture = "https://johnbrooks.net/spigot_plugins/downloads/1.12/MobCapture.jar";
+    private static final String urlToMobCapture = "https://johnbrooks.net/spigot_plugins/downloads/1.13.1/MobCapture.jar";
 
     public static boolean isUpdateAvailable() {
         int remoteSize = UpdateManager.getFileSize(urlToMobCapture);

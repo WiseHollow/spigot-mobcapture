@@ -1,5 +1,10 @@
-package net.johnbrooks.mh;
+package net.johnbrooks.mh.commands;
 
+import net.johnbrooks.mh.Language;
+import net.johnbrooks.mh.Main;
+import net.johnbrooks.mh.Settings;
+import net.johnbrooks.mh.items.UniqueProjectileData;
+import net.johnbrooks.mh.managers.UpdateManager;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.ChatColor;
@@ -10,11 +15,10 @@ import org.bukkit.entity.Player;
 
 import java.io.File;
 
-public class Commands implements CommandExecutor {
+public class CommandMobCapture implements CommandExecutor {
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-
+    public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
         if (!sender.hasPermission("MobCapture.Admin")) {
             sender.sendMessage(Language.PREFIX + "You do not have permission to run this command.");
             return true;
@@ -66,6 +70,14 @@ public class Commands implements CommandExecutor {
                 Main.plugin.reloadConfig();
                 Settings.load();
                 sender.sendMessage(Language.PREFIX + "Configuration has been regenerated and reloaded!");
+                return true;
+            } else if (args[0].equalsIgnoreCase("spawn")) {
+                if (!UniqueProjectileData.isEnabled()) {
+                    sender.sendMessage("Unique Projectiles are not enabled in the config.");
+                } else if (sender instanceof Player) {
+                    ((Player) sender).getInventory().addItem(UniqueProjectileData.spawn());
+                    sender.sendMessage("Spawned Unique Projectile.");
+                }
                 return true;
             }
         }

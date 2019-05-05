@@ -4,6 +4,7 @@ import com.palmergames.bukkit.towny.object.Town;
 import com.palmergames.bukkit.towny.object.TownyUniverse;
 import net.johnbrooks.mh.Language;
 import net.johnbrooks.mh.Settings;
+import net.johnbrooks.mh.events.custom.CreatureCaptureEvent;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
@@ -25,7 +26,7 @@ public class TownyCaptureEvents implements Listener {
                     Town town = optionalTown.get();
                     if (!town.hasResident(event.getCaptor().getName())) {
                         event.getCaptor().sendMessage(Language.PREFIX + "You do not have permission to capture creatures here.");
-                        return;
+                        event.setCancelled(true);
                     }
                 }
             }
