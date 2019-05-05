@@ -234,6 +234,7 @@ public class EventManager implements Listener {
                         }
                     }
                 } else if (event.getAction() == Action.RIGHT_CLICK_AIR) {
+                    event.setUseItemInHand(Event.Result.DENY);
                     //1) Let's prepare to throw the egg. Here we have the unit vector.
                     Vector direction = event.getPlayer().getLocation().getDirection().clone().normalize();
 
