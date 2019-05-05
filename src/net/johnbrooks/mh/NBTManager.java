@@ -252,7 +252,7 @@ public class NBTManager {
 
                 //3) Create item stack and attach NBT tag to it.
                 ItemStack itemStack = new ItemStack(Material.valueOf(materialName));
-                if (tag != new NBTTagCompound())
+                if (!tag.equals(new NBTTagCompound()))
                 {
                     net.minecraft.server.v1_13_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
                     nmsStack.setTag(tag);
@@ -267,7 +267,7 @@ public class NBTManager {
         if (livingEntity instanceof Llama) {
             Llama abstractHorse = (Llama) livingEntity;
             Llama.Color color = Llama.Color.valueOf(entityDetails.getString("color"));
-            Integer strength = entityDetails.getInt("strength");
+            int strength = entityDetails.getInt("strength");
             abstractHorse.setColor(color);
             abstractHorse.setStrength(strength);
         } else if (livingEntity instanceof Horse) {

@@ -23,6 +23,10 @@ public class CreatureReleaseEvent extends Event implements Cancellable {
         return user;
     }
 
+    public Location getTarget() {
+        return target;
+    }
+
     @Override
     public boolean isCancelled() {
         return cancelled;

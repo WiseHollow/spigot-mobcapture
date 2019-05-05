@@ -25,6 +25,7 @@ public class Settings {
 
     private static List<String> disabledWorlds = new ArrayList<>();
 
+    public static boolean townyHook = false;
     public static boolean griefPreventionHook = false;
     public static boolean meleeCapture = true;
 
@@ -65,9 +66,13 @@ public class Settings {
         costVault = config.getDouble("Cost Vault");
         disabledWorlds = config.getStringList("Disabled Worlds");
         coloredEggs = config.getBoolean("Colored Eggs");
+        townyHook = config.getBoolean("Towny Hook");
         griefPreventionHook = config.getBoolean("GriefPrevention Hook");
         meleeCapture = config.getBoolean("MeleeCapture");
 
+        if (townyHook) {
+            Main.logger.info("Towny hook: enabled");
+        }
         if (griefPreventionHook) {
             Main.griefPrevention = GriefPrevention.instance;
             Main.logger.info("GriefPrevention hook " + (Main.griefPrevention != null

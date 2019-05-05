@@ -26,9 +26,9 @@ public class Main extends JavaPlugin {
         getCommand("MobCapture").setExecutor(new CommandMobCapture());
         logger = getLogger();
         permissionManager = new PermissionManager();
+        Settings.load();
         eventManager = new EventManager();
         eventManager.initialize();
-        Settings.load();
         getLogger().info(getDescription().getName() + " is now enabled!");
     }
 

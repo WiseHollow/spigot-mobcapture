@@ -30,6 +30,9 @@ import org.bukkit.util.Vector;
 public class EventManager implements Listener {
     public void initialize() {
         register(this);
+        if (Settings.townyHook) {
+            register(new TownyCaptureEvents());
+        }
     }
 
     private void register(Listener listener) {
