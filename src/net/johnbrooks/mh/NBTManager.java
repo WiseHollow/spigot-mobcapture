@@ -1,9 +1,11 @@
 package net.johnbrooks.mh;
 
 import net.johnbrooks.mh.items.CaptureEgg;
-import net.minecraft.server.v1_14_R1.*;
+import net.minecraft.server.v1_14_R1.NBTTagCompound;
+import net.minecraft.server.v1_14_R1.NBTTagDouble;
+import net.minecraft.server.v1_14_R1.NBTTagList;
+import net.minecraft.server.v1_14_R1.NBTTagString;
 import org.bukkit.*;
-import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.craftbukkit.v1_14_R1.inventory.CraftItemStack;
 import org.bukkit.entity.*;
@@ -153,6 +155,8 @@ public class NBTManager {
             //1) Get basic villager data.
             Villager villager = (Villager) livingEntity;
             villager.setProfession(Villager.Profession.valueOf(entityDetails.getString("profession")));
+            villager.setVillagerExperience(entityDetails.getInt("experience level"));
+            villager.setVillagerLevel(entityDetails.getInt("level"));
 
             //2) Grab the recipe list.
             NBTTagList recipeList = entityDetails.getList("recipes", ListType.COMPOUND.ordinal());
@@ -500,6 +504,8 @@ public class NBTManager {
         } else if (livingEntity instanceof Villager) {
             Villager villager = (Villager) livingEntity;
             String profession = villager.getProfession().name();
+            int level = villager.getVillagerLevel();
+            int expLevel = villager.getVillagerExperience();
 
             NBTTagList recipeList = new NBTTagList();
             for (org.bukkit.inventory.MerchantRecipe recipe : villager.getRecipes()) {
@@ -535,6 +541,8 @@ public class NBTManager {
             }
 
             entityDetails.setString("profession", profession);
+            entityDetails.setInt("level", level);
+            entityDetails.setInt("experience level", expLevel);
             entityDetails.set("recipes", recipeList);
         } else if (livingEntity instanceof Creeper) {
             Creeper creeper = (Creeper) livingEntity;
